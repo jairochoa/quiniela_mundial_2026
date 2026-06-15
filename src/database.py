@@ -118,3 +118,12 @@ def get_leaderboard_data() -> list:
         
     # Ordenar ranking de mayor a menor puntuación
     return sorted(leaderboard, key=lambda x: x["Puntos"], reverse=True)
+
+def update_user_password(user_id: int, new_hash: str) -> bool:
+    """Actualiza de forma segura el hash de la contraseña de un usuario."""
+    try:
+        supabase.table("users").update({"password_hash": new_hash}).eq("id", user_id).execute()
+        return True
+    except Exception as e:
+        st.error(f"Error técnico al actualizar contraseña: {e}")
+        return False

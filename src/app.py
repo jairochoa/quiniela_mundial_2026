@@ -1,7 +1,7 @@
 # Ruta del archivo: src/app.py
 import streamlit as st
 from datetime import datetime, timezone, timedelta
-from auth import authenticate_user
+from auth import authenticate_user, hash_password
 from config import TEAM_FLAGS, LOCK_WINDOW_HOURS, REVELATION_WINDOW_MINUTES, FLAG_CDN_URL, DEFAULT_FLAG_CODE
 from database import (
     fetch_all_matches, 
@@ -11,6 +11,7 @@ from database import (
     supabase,
     fetch_all_users
 )
+
 
 if authenticate_user():
     user = st.session_state.user_info
@@ -23,6 +24,30 @@ if authenticate_user():
         st.markdown(f"**Rol:** {'Administrador 🛠️' if user['is_admin'] else 'Jugador 🏃'}")
         st.divider()
         
+        # ---> NUEVO: FORMULARIO DINÁMICO DE CAMBIO DE CONTRASEÑA <---
+        with st.expander("🔑 Cambiar mi Contraseña"):
+            with st.form("change_password_form", clear_on_submit=True):
+                nueva_clave = st.text_input("Nueva Contraseña", type="password", placeholder="Mínimo 6 caracteres")
+                confirmar_clave = st.text_input("Confirmar Contraseña", type="password", placeholder="Repite la contraseña")
+                submit_clave = st.form_submit_button("Actualizar Clave", use_container_width=True)
+                
+                if submit_clave:
+                    if len(nueva_clave) < 6:
+                        st.error("La contraseña debe tener al menos 6 caracteres.")
+                    elif nueva_clave != confirmar_clave:
+                        st.error("Las contraseñas no coinciden.")
+                    else:
+                        # Encriptar la nueva clave usando el motor de auth.py
+                        from src.auth import hash_password
+                        from src.database import update_user_password
+                        
+                        nuevo_hash = hash_password(nueva_clave)
+                        if update_user_password(user["id"], nuevo_hash):
+                            st.success("¡Clave actualizada!")
+                            st.toast("Contraseña cambiada con éxito. 🔐", icon="🎉")
+        
+        st.divider()
+                
         if st.button("🚪 Cerrar Sesión", use_container_width=True, type="secondary"):
             st.session_state.authenticated = False
             st.session_state.user_info = None
