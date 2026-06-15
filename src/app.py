@@ -1,9 +1,9 @@
 # Ruta del archivo: src/app.py
 import streamlit as st
 from datetime import datetime, timezone, timedelta
-from src.auth import authenticate_user
-from src.config import TEAM_FLAGS, LOCK_WINDOW_HOURS, REVELATION_WINDOW_MINUTES, FLAG_CDN_URL, DEFAULT_FLAG_CODE
-from src.database import (
+from auth import authenticate_user
+from config import TEAM_FLAGS, LOCK_WINDOW_HOURS, REVELATION_WINDOW_MINUTES, FLAG_CDN_URL, DEFAULT_FLAG_CODE
+from database import (
     fetch_all_matches, 
     fetch_latest_user_predictions, 
     save_prediction_log, 
@@ -15,6 +15,19 @@ from src.database import (
 if authenticate_user():
     user = st.session_state.user_info
     now_utc = datetime.now(timezone.utc)
+    
+    with st.sidebar:
+        st.markdown(f"### 👤 Perfil")
+        st.markdown(f"**Nombre:** {user['name']}")
+        st.markdown(f"**Rol:** {'Administrador 🛠️' if user['is_admin'] else 'Jugador 🏃'}")
+        st.divider()
+        
+        # Lógica para destruir la sesión activa
+        if st.button("🚪 Cerrar Sesión", use_container_width=True, type="secondary"):
+            st.session_state.authenticated = False
+            st.session_state.user_info = None
+            st.toast("Sesión cerrada correctamente. ¡Hasta luego!")
+            st.rerun()
     
     # 1. Carga de datos base desde la capa de persistencia
     matches = fetch_all_matches()
