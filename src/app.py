@@ -117,17 +117,17 @@ if authenticate_user():
                     
                     with c1:
                         flag_url = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['home_team'], DEFAULT_FLAG_CODE))
-                        # SOLUCIÓN: Cambiar ** por <b> para mantener compatibilidad con la etiqueta <img>
-                        st.markdown(f"<img src='{flag_url}' width='20'> <b>{m['home_team']}</b>", unsafe_allow_html=True)
+                        # Reducimos fuente a 15px y quitamos margen inferior excedente
+                        st.markdown(f"<p style='margin-bottom: -4px; font-size: 15px;'><img src='{flag_url}' width='20'> <b>{m['home_team']}</b></p>", unsafe_allow_html=True)
                         h_in = st.number_input("H", min_value=0, max_value=20, value=int(saved_home), key=f"uh_{match_id}", disabled=is_locked, label_visibility="collapsed")
                     
                     with c2:
-                        st.markdown("<p style='text-align: center; font-size: 18px; font-weight: bold; margin-top:5px;'>VS</p>", unsafe_allow_html=True)
+                        st.markdown("<p style='text-align: center; font-size: 16px; font-weight: bold; margin-top:12px;'>VS</p>", unsafe_allow_html=True)
                     
                     with c3:
                         flag_url = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['away_team'], DEFAULT_FLAG_CODE))
-                        # SOLUCIÓN: Al estar dentro de <p>, usamos <b> para que el navegador procese la negrita correctamente
-                        st.markdown(f"<p style='text-align: right;'><b>{m['away_team']}</b> <img src='{flag_url}' width='20'></p>", unsafe_allow_html=True)
+                        # IMPORTANTE: Alineado a la izquierda para emparejar con su input box
+                        st.markdown(f"<p style='margin-bottom: -4px; font-size: 15px;'><img src='{flag_url}' width='20'> <b>{m['away_team']}</b></p>", unsafe_allow_html=True)
                         a_in = st.number_input("A", min_value=0, max_value=20, value=int(saved_away), key=f"ua_{match_id}", disabled=is_locked, label_visibility="collapsed")
                     
                     if not is_locked:
@@ -204,15 +204,15 @@ if authenticate_user():
                         
                         with c1:
                             flag_url = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['home_team'], DEFAULT_FLAG_CODE))
-                            st.markdown(f"<img src='{flag_url}' width='20'> <b>{m['home_team']}</b>", unsafe_allow_html=True)
+                            st.markdown(f"<p style='margin-bottom: -4px; font-size: 15px;'><img src='{flag_url}' width='20'> <b>{m['home_team']}</b></p>", unsafe_allow_html=True)
                             res_h = st.number_input("H", min_value=0, max_value=20, value=int(curr_h), key=f"ah_{match_id}", label_visibility="collapsed")
                         
                         with c2:
-                            st.markdown("<p style='text-align: center; font-size: 18px; font-weight: bold; margin-top:5px;'>VS</p>", unsafe_allow_html=True)
+                            st.markdown("<p style='text-align: center; font-size: 16px; font-weight: bold; margin-top:12px;'>VS</p>", unsafe_allow_html=True)
                         
                         with c3:
                             flag_url = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['away_team'], DEFAULT_FLAG_CODE))
-                            st.markdown(f"<p style='text-align: right;'><b>{m['away_team']}</b> <img src='{flag_url}' width='20'></p>", unsafe_allow_html=True)
+                            st.markdown(f"<p style='margin-bottom: -4px; font-size: 15px;'><img src='{flag_url}' width='20'> <b>{m['away_team']}</b></p>", unsafe_allow_html=True)
                             res_a = st.number_input("A", min_value=0, max_value=20, value=int(curr_a), key=f"aa_{match_id}", label_visibility="collapsed")
                         
                         if st.form_submit_button("Publicar Resultado Oficial", use_container_width=True):
