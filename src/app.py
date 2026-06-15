@@ -16,17 +16,16 @@ if authenticate_user():
     user = st.session_state.user_info
     now_utc = datetime.now(timezone.utc)
     
+    # --- BARRA LATERAL PARA GESTIÓN DE SESIÓN EN MÓVIL ---
     with st.sidebar:
         st.markdown(f"### 👤 Perfil")
         st.markdown(f"**Nombre:** {user['name']}")
         st.markdown(f"**Rol:** {'Administrador 🛠️' if user['is_admin'] else 'Jugador 🏃'}")
         st.divider()
         
-        # Lógica para destruir la sesión activa
         if st.button("🚪 Cerrar Sesión", use_container_width=True, type="secondary"):
             st.session_state.authenticated = False
             st.session_state.user_info = None
-            st.toast("Sesión cerrada correctamente. ¡Hasta luego!")
             st.rerun()
     
     # 1. Carga de datos base desde la capa de persistencia
@@ -40,25 +39,57 @@ if authenticate_user():
         tab_p, tab_g, tab_t = st.tabs(["📝 Mis Votos", "👥 Del Grupo", "📊 Posiciones"])
         tab_a = None
 
-    # --- PESTAÑA 1: MIS PRONÓSTICOS ---
+    # --- PESTAÑA 1: MIS PRONÓSTICOS (FILTRADO Y NUEVOS CAMPOS) ---
     with tab_p:
         st.markdown(f"### 👋 ¡Hola, {user['name']}!")
+        
+        # Filtro de selección móvil para evitar scroll infinito
+        filtro_vista = st.selectbox(
+            "🔍 Filtrar partidos:",
+            ["📅 Hoy y Mañana", "⏳ Pendientes por Votar", "📖 Ver Todo el Fixture"]
+        )
+        
+        # Construir dinámicamente la lista filtrada de partidos
+        matches_filtrados = []
         for m in matches:
             match_id = m["id"]
             match_time = datetime.fromisoformat(m["match_time"].replace("Z", "+00:00"))
-            
-            # Desacoplado: Usamos la constante de configuración
             time_limit = match_time - timedelta(hours=LOCK_WINDOW_HOURS)
             is_locked = now_utc >= time_limit
             
+            date_juego = match_time.date()
+            date_hoy = now_utc.date()
+            date_manana = date_hoy + timedelta(days=1)
+            tiene_prediccion = match_id in user_preds
+
+            if filtro_vista == "📅 Hoy y Mañana":
+                if date_juego == date_hoy or date_juego == date_manana:
+                    matches_filtrados.append((m, match_time, is_locked, time_limit))
+            
+            elif filtro_vista == "⏳ Pendientes por Votar":
+                if not tiene_prediccion and not is_locked:
+                    matches_filtrados.append((m, match_time, is_locked, time_limit))
+            
+            else: # 📖 Ver Todo el Fixture
+                matches_filtrados.append((m, match_time, is_locked, time_limit))
+        
+        # Renderizar las tarjetas filtradas
+        if not matches_filtrados:
+            st.info("No hay partidos para mostrar en este filtro. 🙌")
+        
+        for m, match_time, is_locked, time_limit in matches_filtrados:
+            match_id = m["id"]
             saved_home = user_preds[match_id]["home_score"] if match_id in user_preds else 0
             saved_away = user_preds[match_id]["away_score"] if match_id in user_preds else 0
             
             with st.container(border=True):
+                # Encabezado móvil usando la data limpia en español desde Supabase
+                info_juego = f"🏆 {m.get('round', 'Jornada')} | 📍 {m.get('ground', 'Estadio')} | 🇻🇪 {m.get('venezuela_time', '00:00')}"
+                
                 if is_locked:
-                    st.caption(f"🔒 **BLOQUEADO** ({match_time.strftime('%d/%m %H:%M UTC')})")
+                    st.caption(f"🔒 **BLOQUEADO** ({info_juego})")
                 else:
-                    st.caption(f"🟢 **Modificable hasta:** {time_limit.strftime('%H:%M UTC')}")
+                    st.caption(f"🟢 {info_juego} (Modificable hasta: {time_limit.strftime('%H:%M UTC')})")
                 
                 with st.form(key=f"user_form_{match_id}"):
                     c1, c2, c3 = st.columns([4, 2, 4])
@@ -96,7 +127,6 @@ if authenticate_user():
             tiempos_juegos = [datetime.fromisoformat(j["match_time"].replace("Z", "+00:00")) for j in juegos]
             primer_juego_del_dia = min(tiempos_juegos)
             
-            # Desacoplado: Usamos la constante de configuración de minutos
             hora_revelacion = primer_juego_del_dia - timedelta(minutes=REVELATION_WINDOW_MINUTES)
             revelado = now_utc >= hora_revelacion
             
@@ -135,7 +165,7 @@ if authenticate_user():
             st.markdown("### ⚙️ Cargar Resultados Oficiales")
             for m in matches:
                 with st.container(border=True):
-                    st.caption(f"Partido ID #{m['id']} - {m['phase'].upper()}")
+                    st.caption(f"Partido ID #{m['id']} - {m['phase']}")
                     with st.form(key=f"admin_form_{m['id']}"):
                         c1, c2, c3 = st.columns([4, 2, 4])
                         curr_h = m["home_score"] if m["home_score"] is not None else 0
