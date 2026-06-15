@@ -1,7 +1,6 @@
-# Ruta del archivo: src/auth.py
 import bcrypt
 import streamlit as st
-from src.database import fetch_user_by_username
+from database import fetch_user_by_username
 
 def check_password(password: str, hashed_password: str) -> bool:
     """Verifica si la contraseña ingresada coincide con el hash almacenado."""
