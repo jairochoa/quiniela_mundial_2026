@@ -1,0 +1,17 @@
+# .gitignore
+# Secretos y credenciales (CRÍTICO)
+.streamlit/secrets.toml
+
+# Entornos virtuales
+venv/
+.venv/
+env/
+
+# Caché de Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
