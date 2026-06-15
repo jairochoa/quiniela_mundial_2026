@@ -23,7 +23,7 @@ def authenticate_user():
         return True
 
     # Interfaz de Login optimizada para móvil
-    st.markdown("<h2 style='text-align: center;'>🏆 Quiniela 2026</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align: center;'>🏆 Quiniela Valle Grande 2026</h2>", unsafe_allow_html=True)
     st.markdown("<p style='text-align: center; color: gray;'>Ingresa tus credenciales</p>", unsafe_allow_html=True)
 
     with st.form("login_form", clear_on_submit=False):
