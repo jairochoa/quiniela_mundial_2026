@@ -1,8 +1,8 @@
 # Ruta del archivo: src/app.py
 import streamlit as st
 from datetime import datetime, timezone, timedelta
-from src.auth import authenticate_user
-from src.database import fetch_all_matches, fetch_latest_user_predictions, save_prediction_log
+from auth import authenticate_user
+from database import fetch_all_matches, fetch_latest_user_predictions, save_prediction_log
 
 # Mapeo estático de banderas (Flagcdn)
 FLAGS = {"México": "mx", "Marruecos": "ma", "Estados Unidos": "us", "Japón": "jp", "Canadá": "ca", "Italia": "it", "Argentina": "ar", "España": "es"}

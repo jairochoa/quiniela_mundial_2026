@@ -42,14 +42,14 @@ INITIAL_MATCHES = [
         "home_team": "Canadá",
         "away_team": "Italia",
         "phase": "groups",
-        "match_time": datetime(2026, 6, 12, 23, 0, 0, tzinfo=timezone.utc).isoformat()
+        "match_time": datetime(2026, 6, 15, 23, 0, 0, tzinfo=timezone.utc).isoformat()
     },
     {
         "id": 4,
         "home_team": "Argentina",
         "away_team": "España",
         "phase": "groups",
-        "match_time": datetime(2026, 6, 15, 18, 0, 0, tzinfo=timezone.utc).isoformat()
+        "match_time": datetime(2026, 6, 17, 18, 0, 0, tzinfo=timezone.utc).isoformat()
     }
 ]
 
