@@ -93,15 +93,20 @@ if authenticate_user():
                 
                 with st.form(key=f"user_form_{match_id}"):
                     c1, c2, c3 = st.columns([4, 2, 4])
+                    
                     with c1:
                         flag_url = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['home_team'], DEFAULT_FLAG_CODE))
-                        st.markdown(f"<img src='{flag_url}' width='20'> **{m['home_team']}**", unsafe_allow_html=True)
+                        # SOLUCIÓN: Cambiar ** por <b> para mantener compatibilidad con la etiqueta <img>
+                        st.markdown(f"<img src='{flag_url}' width='20'> <b>{m['home_team']}</b>", unsafe_allow_html=True)
                         h_in = st.number_input("H", min_value=0, max_value=20, value=int(saved_home), key=f"uh_{match_id}", disabled=is_locked, label_visibility="collapsed")
+                    
                     with c2:
                         st.markdown("<p style='text-align: center; font-size: 18px; font-weight: bold; margin-top:5px;'>VS</p>", unsafe_allow_html=True)
+                    
                     with c3:
                         flag_url = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['away_team'], DEFAULT_FLAG_CODE))
-                        st.markdown(f"<p style='text-align: right;'>**{m['away_team']}** <img src='{flag_url}' width='20'></p>", unsafe_allow_html=True)
+                        # SOLUCIÓN: Al estar dentro de <p>, usamos <b> para que el navegador procese la negrita correctamente
+                        st.markdown(f"<p style='text-align: right;'><b>{m['away_team']}</b> <img src='{flag_url}' width='20'></p>", unsafe_allow_html=True)
                         a_in = st.number_input("A", min_value=0, max_value=20, value=int(saved_away), key=f"ua_{match_id}", disabled=is_locked, label_visibility="collapsed")
                     
                     if not is_locked:
@@ -159,25 +164,37 @@ if authenticate_user():
                 col_name.markdown(f"{medal} **{row['Jugador']}**")
                 col_pts.markdown(f"<p style='text-align: right; font-weight: bold; color: #1E90FF;'>{row['Puntos']} pts</p>", unsafe_allow_html=True)
 
-    # --- PESTAÑA 4: PANEL ADMINISTRADOR ---
+    # --- PESTAÑA 4: PANEL ADMINISTRADOR (ESTÉTICA JORGO MÓVIL) ---
     if tab_a:
         with tab_a:
             st.markdown("### ⚙️ Cargar Resultados Oficiales")
             for m in matches:
+                match_id = m["id"]
+                curr_h = m["home_score"] if m["home_score"] is not None else 0
+                curr_a = m["away_score"] if m["away_score"] is not None else 0
+                
                 with st.container(border=True):
-                    st.caption(f"Partido ID #{m['id']} - {m['phase']}")
-                    with st.form(key=f"admin_form_{m['id']}"):
+                    # Reutilizamos el mismo encabezado dinámico para consistencia total
+                    info_juego = f"🏆 {m.get('round', 'Jornada')} | 📍 {m.get('ground', 'Estadio')} | 🇻🇪 {m.get('venezuela_time', '00:00')}"
+                    st.caption(f"🆔 Partido #{match_id} | {info_juego}")
+                    
+                    with st.form(key=f"admin_form_{match_id}"):
                         c1, c2, c3 = st.columns([4, 2, 4])
-                        curr_h = m["home_score"] if m["home_score"] is not None else 0
-                        curr_a = m["away_score"] if m["away_score"] is not None else 0
                         
-                        c1.markdown(f"**{m['home_team']}**")
-                        res_h = c1.number_input("H", min_value=0, value=int(curr_h), key=f"ah_{m['id']}", label_visibility="collapsed")
-                        c2.markdown("<p style='text-align: center; margin-top:5px;'>vs</p>", unsafe_allow_html=True)
-                        c3.markdown(f"<p style='text-align: right;'>**{m['away_team']}**</p>", unsafe_allow_html=True)
-                        res_a = c3.number_input("A", min_value=0, value=int(curr_a), key=f"aa_{m['id']}", label_visibility="collapsed")
+                        with c1:
+                            flag_url = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['home_team'], DEFAULT_FLAG_CODE))
+                            st.markdown(f"<img src='{flag_url}' width='20'> <b>{m['home_team']}</b>", unsafe_allow_html=True)
+                            res_h = st.number_input("H", min_value=0, max_value=20, value=int(curr_h), key=f"ah_{match_id}", label_visibility="collapsed")
+                        
+                        with c2:
+                            st.markdown("<p style='text-align: center; font-size: 18px; font-weight: bold; margin-top:5px;'>VS</p>", unsafe_allow_html=True)
+                        
+                        with c3:
+                            flag_url = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['away_team'], DEFAULT_FLAG_CODE))
+                            st.markdown(f"<p style='text-align: right;'><b>{m['away_team']}</b> <img src='{flag_url}' width='20'></p>", unsafe_allow_html=True)
+                            res_a = st.number_input("A", min_value=0, max_value=20, value=int(curr_a), key=f"aa_{match_id}", label_visibility="collapsed")
                         
                         if st.form_submit_button("Publicar Resultado Oficial", use_container_width=True):
-                            supabase.table("matches").update({"home_score": res_h, "away_score": res_a}).eq("id", m["id"]).execute()
+                            supabase.table("matches").update({"home_score": res_h, "away_score": res_a}).eq("id", match_id).execute()
                             st.toast("📢 Resultado guardado y puntajes recalculados.", icon="🚀")
                             st.rerun()
