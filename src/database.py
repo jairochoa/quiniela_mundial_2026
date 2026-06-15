@@ -83,7 +83,7 @@ def get_leaderboard_data() -> list:
     matches = supabase.table("matches").select("*").execute().data
     
     # Mapear partidos jugados (los que tienen score no nulo)
-    played_matches = {m["id"]: m for m in matches if m["home_score"] is not NULL and m["home_score"] is not None}
+    played_matches = {m["id"]: m for m in matches if m["home_score"] is not None}
     
     leaderboard = []
     

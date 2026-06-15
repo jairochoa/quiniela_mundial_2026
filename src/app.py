@@ -2,7 +2,7 @@
 import streamlit as st
 from datetime import datetime, timezone, timedelta
 from auth import authenticate_user
-from database import fetch_all_matches, fetch_latest_user_predictions, save_prediction_log, get_leaderboard_data
+from database import fetch_all_matches, fetch_latest_user_predictions, save_prediction_log, get_leaderboard_data, update_match_result
 
 # Mapeo estático de banderas (Flagcdn)
 FLAGS = {"México": "mx", "Marruecos": "ma", "Estados Unidos": "us", "Japón": "jp", "Canadá": "ca", "Italia": "it", "Argentina": "ar", "España": "es"}
