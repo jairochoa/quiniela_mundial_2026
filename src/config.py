@@ -109,3 +109,67 @@ TEAM_FLAGS = {
     "New Zealand": "nz",
     "Nueva Zelanda": "nz"
 }
+
+TEAM_TRANSLATIONS = {
+    # Anfitriones
+    "Canada": "Canadá",
+    "Mexico": "México",
+    "United States": "Estados Unidos",
+
+    # CONMEBOL
+    "Argentina": "Argentina",
+    "Brazil": "Brasil",
+    "Colombia": "Colombia",
+    "Ecuador": "Ecuador",
+    "Paraguay": "Paraguay",
+    "Uruguay": "Uruguay",
+
+    # UEFA
+    "Austria": "Austria",
+    "Belgium": "Bélgica",
+    "Bosnia and Herzegovina": "Bosnia y Herzegovina",
+    "Croatia": "Croacia",
+    "Czechia": "Chequia",
+    "England": "Inglaterra",
+    "France": "Francia",
+    "Germany": "Alemania",
+    "Netherlands": "Países Bajos",
+    "Norway": "Noruega",
+    "Portugal": "Portugal",
+    "Scotland": "Escocia",
+    "Spain": "España",
+    "Sweden": "Suecia",
+    "Switzerland": "Suiza",
+    "Türkiye": "Turquía",
+
+    # AFC
+    "Australia": "Australia",
+    "Iran": "Irán",
+    "Iraq": "Iraq",
+    "Japan": "Japón",
+    "Jordan": "Jordania",
+    "Qatar": "Catar",
+    "Saudi Arabia": "Arabia Saudita",
+    "South Korea": "Corea del Sur",
+    "Uzbekistan": "Uzbekistán",
+
+    # CAF
+    "Algeria": "Argelia",
+    "Cape Verde": "Cabo Verde",
+    "DR Congo": "República Democrática del Congo",
+    "Egypt": "Egipto",
+    "Ghana": "Ghana",
+    "Ivory Coast": "Costa de Marfil",
+    "Morocco": "Marruecos",
+    "Senegal": "Senegal",
+    "South Africa": "Sudáfrica",
+    "Tunisia": "Túnez",
+
+    # CONCACAF (Adicionales)
+    "Curacao": "Curazao",
+    "Haiti": "Haití",
+    "Panama": "Panamá",
+
+    # OFC
+    "New Zealand": "Nueva Zelanda"
+}

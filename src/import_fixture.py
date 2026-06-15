@@ -4,27 +4,20 @@ import re
 import os
 from datetime import datetime, timezone, timedelta
 from database import supabase
+from config import TEAM_TRANSLATIONS
 
 def process_times(date_str: str, time_str: str):
-    """
-    Procesa las cadenas del JSON para calcular:
-    1. El timestamp ISO nativo en UTC para la lógica del sistema.
-    2. La hora formateada de Venezuela (UTC-4) para la visualización.
-    """
-    # Expresión regular para entender formatos como "13:00 UTC-6" o "18:00 UTC+1"
     match = re.match(r"(\d{2}):(\d{2})\s+UTC([+-]\d+)?", time_str)
     if match:
         hh, mm, offset = match.groups()
         offset_hours = int(offset) if offset else 0
         
-        # 1. Calcular UTC absoluto
         dt_local = datetime.strptime(f"{date_str} {hh}:{mm}", "%Y-%m-%d %H:%M")
         dt_utc = dt_local - timedelta(hours=offset_hours)
         dt_utc = dt_utc.replace(tzinfo=timezone.utc)
         
-        # 2. Calcular Hora de Venezuela (UTC - 4)
         dt_venezuela = dt_utc - timedelta(hours=4)
-        venezuela_time_str = dt_venezuela.strftime("%I:%M %p") # Ejemplo: "03:00 PM"
+        venezuela_time_str = dt_venezuela.strftime("%I:%M %p")
         
         return dt_utc.isoformat(), venezuela_time_str
         
@@ -40,31 +33,38 @@ def import_json_fixture():
     with open(json_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    print(f"⏳ Procesando fixture con hora de Venezuela y sedes...")
+    print(f"⏳ Procesando e insertando fixture traducido al español...")
     
     match_counter = 1
     partidos_cargados = 0
 
     for match_item in data.get("matches", []):
         try:
-            # Procesar tiempos intercalados
             utc_timestamp, vzla_time = process_times(match_item["date"], match_item["time"])
             
-            # Armar payload con las nuevas columnas
+            # 1. Traducir nombres de equipos usando el diccionario de config.py
+            team1_raw = match_item["team1"].strip()
+            team2_raw = match_item["team2"].strip()
+            home_es = TEAM_TRANSLATIONS.get(team1_raw, team1_raw)
+            away_es = TEAM_TRANSLATIONS.get(team2_raw, team2_raw)
+            
+            # 2. Traducir la Ronda dinámicamente (Matchday X -> Jornada X)
+            round_raw = match_item.get("round", "Matchday Desconocido").strip()
+            round_es = round_raw.replace("Matchday", "Jornada")
+            
+            
             match_data = {
                 "id": match_counter,
-                "home_team": match_item["team1"].strip(),
-                "away_team": match_item["team2"].strip(),
-                "phase": "groups",
+                "home_team": home_es,
+                "away_team": away_es,
                 "match_time": utc_timestamp,
                 "home_score": None,
                 "away_score": None,
-                "round": match_item.get("round", "Matchday Desconocido").strip(),
+                "round": round_es,
                 "ground": match_item.get("ground", "Estadio por definir").strip(),
                 "venezuela_time": vzla_time
             }
             
-            # Upsert en Supabase
             supabase.table("matches").upsert(match_data).execute()
             partidos_cargados += 1
             match_counter += 1
@@ -72,7 +72,7 @@ def import_json_fixture():
         except Exception as e:
             print(f"⚠️ Error en juego {match_item.get('team1')} vs {match_item.get('team2')}: {e}")
 
-    print(f"🚀 ¡Ingesta limpia completada! {partidos_cargados} partidos listos con hora de Venezuela y sedes.")
+    print(f"🚀 ¡Ingesta completada! {partidos_cargados} partidos guardados en perfecto español.")
 
 if __name__ == "__main__":
     import_json_fixture()
