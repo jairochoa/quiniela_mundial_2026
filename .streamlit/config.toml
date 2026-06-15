@@ -1,0 +1,10 @@
+# .streamlit/config.toml
+[theme]
+primaryColor = "#1E90FF"
+backgroundColor = "#0E1117"
+secondaryBackgroundColor = "#1F2635"
+textColor = "#FFFFFF"
+font = "sans serif"
+
+[ui]
+hideTopBar = true
