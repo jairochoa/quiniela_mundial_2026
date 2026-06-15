@@ -9,9 +9,9 @@ from database import (
     save_prediction_log, 
     get_leaderboard_data,
     supabase,
-    fetch_all_users
+    fetch_all_users,
+    update_user_password
 )
-
 
 if authenticate_user():
     user = st.session_state.user_info
@@ -37,10 +37,6 @@ if authenticate_user():
                     elif nueva_clave != confirmar_clave:
                         st.error("Las contraseñas no coinciden.")
                     else:
-                        # Encriptar la nueva clave usando el motor de auth.py
-                        from src.auth import hash_password
-                        from src.database import update_user_password
-                        
                         nuevo_hash = hash_password(nueva_clave)
                         if update_user_password(user["id"], nuevo_hash):
                             st.success("¡Clave actualizada!")
