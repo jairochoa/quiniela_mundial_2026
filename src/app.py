@@ -78,7 +78,7 @@ st.markdown("""
 
     /* 8. Trunca nombres largos de países automáticamente si no caben */
     .team-text-container {
-        margin-top: -10px !important; /* Margen negativo: Jala el texto hacia arriba. Calíbralo si te falta o sobra */
+        margin-top: -20px !important; /* Margen negativo: Jala el texto hacia arriba. Calíbralo si te falta o sobra */
         margin-bottom: 0 !important;
         margin-left: 0 !important;
         margin-right: 0 !important;
@@ -115,7 +115,11 @@ st.markdown("""
     }
     
     div[data-testid="stFormSubmitButton"] {
-        margin-top: -14px !important;
+        margin-top: -10px !important;
+    }
+    /* 9. ELIMINA EL ESPACIO VERTICAL: Pega la fila de abajo con la de arriba colapsando el gap nativo */
+    div[data-testid="stForm"] > div[data-testid="stVerticalBlockBorderWrapper"] > div > div[data-testid="stVerticalBlock"] {
+        gap: 2px !important; /* Reduce a casi cero el espacio de separación entre las filas del partido */
     }
     
 </style>
