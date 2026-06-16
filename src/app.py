@@ -16,6 +16,11 @@ from database import (
 # --- INYECCIÓN DE CSS CALIBRADO PARA MÓVILES (JALONAR MARCADORES A LA IZQUIERDA) ---
 st.markdown("""
 <style>
+    /* Bloqueo total y absoluto de scroll horizontal a nivel raíz */
+    html, body, [data-testid="stApp"], [data-testid="stAppViewBlockContainer"] {
+        overflow-x: hidden !important;
+    }
+    
     /* 1. Oculta la barra de herramientas superior de Streamlit */
     header[data-testid="stHeader"] {
         display: none !important;
