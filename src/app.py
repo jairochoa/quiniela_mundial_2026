@@ -13,6 +13,45 @@ from database import (
     update_user_password
 )
 
+# --- INYECCIÓN DE CSS PARA CONGELAR PESTAÑAS (STICKY TABS) Y COMPACTAR INTERFAZ ---
+st.markdown("""
+<style>
+    /* Hace que la barra de pestañas se quede fija arriba al hacer scroll */
+    div[data-testid="stTabs"] > div:first-child {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 0;
+        background-color: #FFFFFF;
+        z-index: 999;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #E0E0E0;
+    }
+    /* Reduce el espacio muerto superior de la app en móviles */
+    .block-container {
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important;
+    }
+    /* Estilos para la tabla compacta de posiciones */
+    .tabla-leaderboard {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 15px;
+    }
+    .tabla-leaderboard th {
+        background-color: #F8F9FA;
+        color: #212529;
+        text-align: left;
+        padding: 8px;
+        border-bottom: 2px solid #E0E0E0;
+    }
+    .tabla-leaderboard td {
+        padding: 10px 8px;
+        border-bottom: 1px solid #F1F1F1;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 if authenticate_user():
     user = st.session_state.user_info
     now_utc = datetime.now(timezone.utc)
@@ -24,7 +63,6 @@ if authenticate_user():
         st.markdown(f"**Rol:** {'Administrador 🛠️' if user['is_admin'] else 'Jugador 🏃'}")
         st.divider()
         
-        # ---> NUEVO: FORMULARIO DINÁMICO DE CAMBIO DE CONTRASEÑA <---
         with st.expander("🔑 Cambiar mi Contraseña"):
             with st.form("change_password_form", clear_on_submit=True):
                 nueva_clave = st.text_input("Nueva Contraseña", type="password", placeholder="Mínimo 6 caracteres")
@@ -37,40 +75,39 @@ if authenticate_user():
                     elif nueva_clave != confirmar_clave:
                         st.error("Las contraseñas no coinciden.")
                     else:
+                        from src.auth import hash_password
+                        from src.database import update_user_password
+                        
                         nuevo_hash = hash_password(nueva_clave)
                         if update_user_password(user["id"], nuevo_hash):
                             st.success("¡Clave actualizada!")
                             st.toast("Contraseña cambiada con éxito. 🔐", icon="🎉")
         
         st.divider()
-                
         if st.button("🚪 Cerrar Sesión", use_container_width=True, type="secondary"):
             st.session_state.authenticated = False
             st.session_state.user_info = None
             st.rerun()
     
-    # 1. Carga de datos base desde la capa de persistencia
+    # 1. Carga de datos base
     matches = fetch_all_matches()
     user_preds = fetch_latest_user_predictions(user["id"])
     
     # 2. Configuración dinámica de Pestañas Móviles
     if user["is_admin"]:
-        tab_p, tab_g, tab_t, tab_a = st.tabs(["📝 Mis Votos", "👥 Del Grupo", "📊 Posiciones", "⚙️ Admin"])
+        tab_p, tab_g, tab_t, tab_a = st.tabs(["📝 Votos", "👥 Grupo", "📊 Tabla", "⚙️ Admin"])
     else:
-        tab_p, tab_g, tab_t = st.tabs(["📝 Mis Votos", "👥 Del Grupo", "📊 Posiciones"])
+        tab_p, tab_g, tab_t = st.tabs(["📝 Votos", "👥 Grupo", "📊 Tabla"])
         tab_a = None
 
-    # --- PESTAÑA 1: MIS PRONÓSTICOS (FILTRADO Y NUEVOS CAMPOS) ---
+    # --- PESTAÑA 1: MIS PRONÓSTICOS ---
     with tab_p:
-        st.markdown(f"### 👋 ¡Hola, {user['name']}!")
-        
-        # Filtro de selección móvil para evitar scroll infinito
         filtro_vista = st.selectbox(
             "🔍 Filtrar partidos:",
-            ["📅 Hoy y Mañana", "⏳ Pendientes por Votar", "📖 Ver Todo el Fixture"]
+            ["📅 Hoy y Mañana", "⏳ Pendientes por Votar", "📖 Ver Todo el Fixture"],
+            label_visibility="collapsed" # Escondemos etiqueta para ahorrar espacio vertical
         )
         
-        # Construir dinámicamente la lista filtrada de partidos
         matches_filtrados = []
         for m in matches:
             match_id = m["id"]
@@ -86,17 +123,14 @@ if authenticate_user():
             if filtro_vista == "📅 Hoy y Mañana":
                 if date_juego == date_hoy or date_juego == date_manana:
                     matches_filtrados.append((m, match_time, is_locked, time_limit))
-            
             elif filtro_vista == "⏳ Pendientes por Votar":
                 if not tiene_prediccion and not is_locked:
                     matches_filtrados.append((m, match_time, is_locked, time_limit))
-            
-            else: # 📖 Ver Todo el Fixture
+            else:
                 matches_filtrados.append((m, match_time, is_locked, time_limit))
         
-        # Renderizar las tarjetas filtradas
         if not matches_filtrados:
-            st.info("No hay partidos para mostrar en este filtro. 🙌")
+            st.info("No hay partidos en este filtro. 🙌")
         
         for m, match_time, is_locked, time_limit in matches_filtrados:
             match_id = m["id"]
@@ -104,44 +138,36 @@ if authenticate_user():
             saved_away = user_preds[match_id]["away_score"] if match_id in user_preds else 0
             
             with st.container(border=True):
-                # Encabezado móvil usando la data limpia en español desde Supabase
                 info_juego = f"🏆 {m.get('round', 'Jornada')} | 📍 {m.get('ground', 'Estadio')} | 🇻🇪 {m.get('venezuela_time', '00:00')}"
-                
                 if is_locked:
                     st.caption(f"🔒 **BLOQUEADO** ({info_juego})")
                 else:
-                    st.caption(f"🟢 {info_juego} (Modificable hasta: {time_limit.strftime('%H:%M UTC')})")
+                    st.caption(f"🟢 {info_juego}")
                 
                 with st.form(key=f"user_form_{match_id}"):
                     c1, c2, c3 = st.columns([4, 2, 4])
-                    
                     with c1:
                         flag_url = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['home_team'], DEFAULT_FLAG_CODE))
-                        # Reducimos fuente a 15px y quitamos margen inferior excedente
-                        st.markdown(f"<p style='margin-bottom: -4px; font-size: 15px;'><img src='{flag_url}' width='20'> <b>{m['home_team']}</b></p>", unsafe_allow_html=True)
+                        st.markdown(f"<p style='margin-bottom: -4px; font-size: 14px;'><img src='{flag_url}' width='18'> <b>{m['home_team']}</b></p>", unsafe_allow_html=True)
                         h_in = st.number_input("H", min_value=0, max_value=20, value=int(saved_home), key=f"uh_{match_id}", disabled=is_locked, label_visibility="collapsed")
-                    
                     with c2:
-                        st.markdown("<p style='text-align: center; font-size: 16px; font-weight: bold; margin-top:12px;'>VS</p>", unsafe_allow_html=True)
-                    
+                        st.markdown("<p style='text-align: center; font-size: 14px; font-weight: bold; margin-top:12px;'>VS</p>", unsafe_allow_html=True)
                     with c3:
                         flag_url = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['away_team'], DEFAULT_FLAG_CODE))
-                        # IMPORTANTE: Alineado a la izquierda para emparejar con su input box
-                        st.markdown(f"<p style='margin-bottom: -4px; font-size: 15px;'><img src='{flag_url}' width='20'> <b>{m['away_team']}</b></p>", unsafe_allow_html=True)
+                        st.markdown(f"<p style='margin-bottom: -4px; font-size: 14px;'><img src='{flag_url}' width='18'> <b>{m['away_team']}</b></p>", unsafe_allow_html=True)
                         a_in = st.number_input("A", min_value=0, max_value=20, value=int(saved_away), key=f"ua_{match_id}", disabled=is_locked, label_visibility="collapsed")
                     
                     if not is_locked:
                         if st.form_submit_button("Guardar", use_container_width=True):
                             save_prediction_log(user["id"], match_id, h_in, a_in)
-                            st.toast("💾 Pronóstico registrado.", icon="✅")
+                            st.toast("💾 Registrado.", icon="✅")
                             st.rerun()
                     else:
                         st.form_submit_button(f"Tu marcador: {saved_home} - {saved_away}", disabled=True, use_container_width=True)
 
     # --- PESTAÑA 2: APUESTAS DEL GRUPO ---
     with tab_g:
-        st.markdown("### 👥 Apuestas Abiertas del Grupo")
-        
+        st.markdown("### 👥 Apuestas Abiertas")
         dict_dias = {}
         for m in matches:
             fecha_dia = m["match_time"].split("T")[0]
@@ -152,17 +178,15 @@ if authenticate_user():
         for dia, juegos in dict_dias.items():
             tiempos_juegos = [datetime.fromisoformat(j["match_time"].replace("Z", "+00:00")) for j in juegos]
             primer_juego_del_dia = min(tiempos_juegos)
-            
             hora_revelacion = primer_juego_del_dia - timedelta(minutes=REVELATION_WINDOW_MINUTES)
             revelado = now_utc >= hora_revelacion
             
             with st.expander(f"📅 Jornada del {dia}", expanded=revelado):
                 if not revelado:
-                    st.warning(f"🔒 Los pronósticos se revelarán a las {hora_revelacion.strftime('%H:%M UTC')}")
+                    st.warning(f"🔒 Revelación: {hora_revelacion.strftime('%H:%M UTC')}")
                 else:
                     logs_all = supabase.table("predictions_log").select("*").execute().data
                     all_users = fetch_all_users()
-                    
                     for j in juegos:
                         st.markdown(f"**⚽ {j['home_team']} vs {j['away_team']}**")
                         for u in all_users:
@@ -174,18 +198,30 @@ if authenticate_user():
                                 st.markdown(f"• *{u['name']}:* No jugó 🤷‍♂️")
                         st.divider()
 
-    # --- PESTAÑA 3: TABLA DE POSICIONES ---
+    # --- PESTAÑA 3: TABLA DE POSICIONES COMPACTA (SIN SCROLL SE VE TODO EL GRUPO) ---
     with tab_t:
         st.markdown("### 🏆 Tabla de Posiciones")
         leaderboard = get_leaderboard_data()
+        
+        # Construimos una tabla HTML nativa ultraligera y compacta
+        tabla_html = "<table class='tabla-leaderboard'>"
+        tabla_html += "<tr><th>Pos</th><th>Jugador</th><th style='text-align:right;'>Puntos</th></tr>"
+        
         for idx, row in enumerate(leaderboard):
-            medal = "🥇" if idx == 0 else ("🥈" if idx == 1 else ("🥉" if idx == 2 else "🏃"))
-            with st.container(border=True):
-                col_name, col_pts = st.columns([8, 2])
-                col_name.markdown(f"{medal} **{row['Jugador']}**")
-                col_pts.markdown(f"<p style='text-align: right; font-weight: bold; color: #1E90FF;'>{row['Puntos']} pts</p>", unsafe_allow_html=True)
+            medal = "🥇" if idx == 0 else ("🥈" if idx == 1 else ("🥉" if idx == 2 else f"{idx + 1}"))
+            tabla_html += f"""
+            <tr>
+                <td>{medal}</td>
+                <td><b>{row['Jugador']}</b></td>
+                <td style='text-align:right; font-weight:bold; color:#1E90FF;'>{row['Puntos']} pts</td>
+            </tr>
+            """
+        tabla_html += "</table>"
+        
+        # Renderizado del HTML compacto
+        st.markdown(tabla_html, unsafe_allow_html=True)
 
-    # --- PESTAÑA 4: PANEL ADMINISTRADOR (ESTÉTICA JORGO MÓVIL) ---
+    # --- PESTAÑA 4: PANEL ADMINISTRADOR ---
     if tab_a:
         with tab_a:
             st.markdown("### ⚙️ Cargar Resultados Oficiales")
@@ -195,27 +231,23 @@ if authenticate_user():
                 curr_a = m["away_score"] if m["away_score"] is not None else 0
                 
                 with st.container(border=True):
-                    # Reutilizamos el mismo encabezado dinámico para consistencia total
                     info_juego = f"🏆 {m.get('round', 'Jornada')} | 📍 {m.get('ground', 'Estadio')} | 🇻🇪 {m.get('venezuela_time', '00:00')}"
                     st.caption(f"🆔 Partido #{match_id} | {info_juego}")
                     
                     with st.form(key=f"admin_form_{match_id}"):
                         c1, c2, c3 = st.columns([4, 2, 4])
-                        
                         with c1:
                             flag_url = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['home_team'], DEFAULT_FLAG_CODE))
-                            st.markdown(f"<p style='margin-bottom: -4px; font-size: 15px;'><img src='{flag_url}' width='20'> <b>{m['home_team']}</b></p>", unsafe_allow_html=True)
+                            st.markdown(f"<p style='margin-bottom: -4px; font-size: 14px;'><img src='{flag_url}' width='18'> <b>{m['home_team']}</b></p>", unsafe_allow_html=True)
                             res_h = st.number_input("H", min_value=0, max_value=20, value=int(curr_h), key=f"ah_{match_id}", label_visibility="collapsed")
-                        
                         with c2:
-                            st.markdown("<p style='text-align: center; font-size: 16px; font-weight: bold; margin-top:12px;'>VS</p>", unsafe_allow_html=True)
-                        
+                            st.markdown("<p style='text-align: center; font-size: 14px; font-weight: bold; margin-top:12px;'>VS</p>", unsafe_allow_html=True)
                         with c3:
                             flag_url = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['away_team'], DEFAULT_FLAG_CODE))
-                            st.markdown(f"<p style='margin-bottom: -4px; font-size: 15px;'><img src='{flag_url}' width='20'> <b>{m['away_team']}</b></p>", unsafe_allow_html=True)
+                            st.markdown(f"<p style='margin-bottom: -4px; font-size: 14px;'><img src='{flag_url}' width='18'> <b>{m['away_team']}</b></p>", unsafe_allow_html=True)
                             res_a = st.number_input("A", min_value=0, max_value=20, value=int(curr_a), key=f"aa_{match_id}", label_visibility="collapsed")
                         
                         if st.form_submit_button("Publicar Resultado Oficial", use_container_width=True):
                             supabase.table("matches").update({"home_score": res_h, "away_score": res_a}).eq("id", match_id).execute()
-                            st.toast("📢 Resultado guardado y puntajes recalculados.", icon="🚀")
+                            st.toast("📢 Puntos recalculados.", icon="🚀")
                             st.rerun()
