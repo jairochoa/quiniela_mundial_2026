@@ -169,14 +169,14 @@ if authenticate_user():
     if user["is_admin"]:
         tab_p, tab_g, tab_t, tab_a = st.tabs(["📝 Votos", "👥 Grupo", "📊 Tabla", "⚙️ Admin"])
     else:
-        tab_p, tab_g, tab_t = st.tabs(["📝 Votos", "👥 Grupo", "📊 Tabla"])
+        tab_p, tab_g, tab_t = st.tabs(["📝 Mis Pronósticos", "👥 Grupo", "📊 Tabla"])
         tab_a = None
 
     # --- PESTAÑA 1: MIS PRONÓSTICOS ---
     with tab_p:
         filtro_vista = st.selectbox(
             "🔍 Filtrar partidos:",
-            ["📅 Hoy y Mañana", "⏳ Pendientes por Votar", "📖 Ver Todo el Fixture"],
+            ["📅 Hoy y Mañana", "⏳ Pendientes por Pronosticar", "📖 Ver Todo el Fixture"],
             label_visibility="collapsed"
         )
         
@@ -197,7 +197,7 @@ if authenticate_user():
             if filtro_vista == "📅 Hoy y Mañana":
                 if date_juego == date_hoy or date_juego == date_manana:
                     matches_filtrados.append((m, match_time, is_locked, time_limit))
-            elif filtro_vista == "⏳ Pendientes por Votar":
+            elif filtro_vista == "⏳ Pendientes por Pronosticar":
                 if not tiene_prediccion and not is_locked:
                     matches_filtrados.append((m, match_time, is_locked, time_limit))
             else:
