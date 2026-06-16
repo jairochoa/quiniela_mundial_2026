@@ -260,9 +260,18 @@ if authenticate_user():
                     else:
                         st.form_submit_button(f"Tu marcador final: {int(saved_home)} - {int(saved_away)}", disabled=True, use_container_width=True)
 
-# --- PESTAÑA 2: APUESTAS DEL GRUPO (AGRUPADO POR ROUND DE LA BASE DE DATOS) ---
+# --- PESTAÑA 2: APUESTAS DEL GRUPO (CON AUTO-APERTURA DE JORNADA ACTUAL) ---
     with tab_g:
         st.markdown("### 👥 Apuestas Abiertas")
+        
+        # CEREBRO DE PROXIMIDAD: Encontramos el round actual basado en el partido más cercano a este preciso instante
+        round_actual = ""
+        if matches:
+            partido_mas_cercano = min(
+                matches, 
+                key=lambda x: abs((datetime.fromisoformat(x["match_time"].replace("Z", "+00:00")) - now_utc).total_seconds())
+            )
+            round_actual = partido_mas_cercano.get("round", "Jornada")
         
         # AGRUPACIÓN MAESTRA: Agrupamos los partidos por el campo 'round' de Supabase
         dict_rounds = {}
@@ -276,13 +285,15 @@ if authenticate_user():
         for round_name, juegos in dict_rounds.items():
             tiempos_juegos = [datetime.fromisoformat(j["match_time"].replace("Z", "+00:00")) for j in juegos]
             
-            # Buscamos el juego que abre el round (en tu ejemplo, el de las 3:00 PM Venezuela)
+            # Buscamos el juego que abre el round
             primer_juego_del_round = min(tiempos_juegos)
             hora_revelacion = primer_juego_del_round - timedelta(minutes=REVELATION_WINDOW_MINUTES)
             revelado = now_utc >= hora_revelacion
             
-            # El expander ahora lleva el nombre oficial del Round
-            with st.expander(f"🏆 {round_name}", expanded=revelado):
+            # DINÁMICO: El expander se abre por defecto SOLO si es la jornada que se está jugando hoy o la más próxima
+            jornada_activa = (round_name == round_actual)
+            
+            with st.expander(f"🏆 {round_name}", expanded=jornada_activa):
                 logs_all = supabase.table("predictions_log").select("*").execute().data
                 all_users = fetch_all_users()
                 
@@ -314,7 +325,7 @@ if authenticate_user():
                             else:
                                 st.markdown(f"{nombre_mostrar}: Aún no envió su pronóstico ⏳")
                     st.divider()
-
+                    
     # --- PESTAÑA 3: TABLA DE POSICIONES COMPACTA ---
     with tab_t:
         st.markdown("### 🏆 Tabla de Posiciones")
