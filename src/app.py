@@ -13,15 +13,15 @@ from database import (
     update_user_password
 )
 
-# --- INYECCIÓN DE CSS AVANZADO: OPTIMIZACIÓN COMPACTA DE TARJETAS HORIZONTALES ---
+# --- INYECCIÓN DE CSS AVANZADO: ELIMINACIÓN DE BREAKPOINTS Y SELECTORES ACOTADOS ---
 st.markdown("""
 <style>
-    /* Oculta la barra de herramientas superior de Streamlit */
+    /* 1. Oculta la barra de herramientas superior de Streamlit */
     header[data-testid="stHeader"] {
         display: none !important;
     }
     
-    /* Mantiene las pestañas fijas arriba sin cortes */
+    /* 2. Mantiene las pestañas fijas arriba sin cortes */
     div[data-testid="stTabs"] > div:first-child {
         position: -webkit-sticky;
         position: sticky;
@@ -33,21 +33,29 @@ st.markdown("""
         border-bottom: 1px solid #E0E0E0;
     }
     
-    /* Reduce márgenes muertos en smartphones */
+    /* 3. Reduce márgenes muertos en smartphones */
     .block-container {
         padding-top: 0.5rem !important;
         padding-bottom: 0.5rem !important;
     }
     
-    /* Compacta el espaciado de los formularios */
+    /* 4. Compacta el espaciado de los formularios */
     div[data-testid="stForm"] {
         padding: 8px !important;
     }
     
-    /* Justifica y reduce el tamaño de las cajas selectoras de un dígito */
-    div[data-testid="stSelectbox"] {
+    /* 5. SOLUCIÓN AL SALTO DE LÍNEA: Fuerza a las columnas del partido a quedarse alineadas en horizontal */
+    div[data-testid="stForm"] div[data-testid="stHorizontalBlock"] {
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        gap: 8px !important;
+    }
+    
+    /* 6. SOLUCIÓN AL FILTRO: Achica ÚNICAMENTE los selectbox de goles que estén dentro de un formulario */
+    div[data-testid="stForm"] div[data-testid="stSelectbox"] {
         max-width: 75px !important;
-        margin-left: auto !important; /* Empuja el selector hacia la derecha */
+        margin-left: auto !important;
     }
 
     /* Estilos para la tabla compacta de posiciones */
@@ -163,17 +171,17 @@ if authenticate_user():
                     url_home = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['home_team'], DEFAULT_FLAG_CODE))
                     url_away = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['away_team'], DEFAULT_FLAG_CODE))
                     
-                    # FILA 1: Local (Bandera + Nombre Justificado a la Izquierda | Selector a la Derecha)
+                    # FILA 1: Local (Bandera + Nombre alineados e inline con el Selector)
                     c1_h, c2_h = st.columns([9, 3])
                     with c1_h:
-                        st.markdown(f"<p style='margin-top: 6px; margin-bottom: 0; font-size: 15px;'><img src='{url_home}' width='18' style='vertical-align: middle; margin-right: 6px;'> <b>{m['home_team']}</b></p>", unsafe_allow_html=True)
+                        st.markdown(f"<p style='margin: 0; font-size: 15px; display: flex; align-items: center;'><img src='{url_home}' width='18' style='margin-right: 8px;'> <b>{m['home_team']}</b></p>", unsafe_allow_html=True)
                     with c2_h:
                         h_in = st.selectbox("H", options=list(range(11)), index=int(saved_home), key=f"uh_{match_id}", disabled=is_locked, label_visibility="collapsed")
                     
-                    # FILA 2: Visitante (Bandera + Nombre Justificado a la Izquierda | Selector a la Derecha)
+                    # FILA 2: Visitante (Bandera + Nombre alineados e inline con el Selector)
                     c1_a, c2_a = st.columns([9, 3])
                     with c1_a:
-                        st.markdown(f"<p style='margin-top: 6px; margin-bottom: 0; font-size: 15px;'><img src='{url_away}' width='18' style='vertical-align: middle; margin-right: 6px;'> <b>{m['away_team']}</b></p>", unsafe_allow_html=True)
+                        st.markdown(f"<p style='margin: 0; font-size: 15px; display: flex; align-items: center;'><img src='{url_away}' width='18' style='margin-right: 8px;'> <b>{m['away_team']}</b></p>", unsafe_allow_html=True)
                     with c2_a:
                         a_in = st.selectbox("A", options=list(range(11)), index=int(saved_away), key=f"ua_{match_id}", disabled=is_locked, label_visibility="collapsed")
                     
@@ -255,14 +263,14 @@ if authenticate_user():
                         # FILA 1 ADMIN: Local
                         c1_h, c2_h = st.columns([9, 3])
                         with c1_h:
-                            st.markdown(f"<p style='margin-top: 6px; margin-bottom: 0; font-size: 15px;'><img src='{url_home}' width='18' style='vertical-align: middle; margin-right: 6px;'> <b>{m['home_team']}</b></p>", unsafe_allow_html=True)
+                            st.markdown(f"<p style='margin: 0; font-size: 15px; display: flex; align-items: center;'><img src='{url_home}' width='18' style='margin-right: 8px;'> <b>{m['home_team']}</b></p>", unsafe_allow_html=True)
                         with c2_h:
                             res_h = st.selectbox("H", options=list(range(11)), index=int(curr_h), key=f"ah_{match_id}", label_visibility="collapsed")
                         
                         # FILA 2 ADMIN: Visitante
                         c1_a, c2_a = st.columns([9, 3])
                         with c1_a:
-                            st.markdown(f"<p style='margin-top: 6px; margin-bottom: 0; font-size: 15px;'><img src='{url_away}' width='18' style='vertical-align: middle; margin-right: 6px;'> <b>{m['away_team']}</b></p>", unsafe_allow_html=True)
+                            st.markdown(f"<p style='margin: 0; font-size: 15px; display: flex; align-items: center;'><img src='{url_away}' width='18' style='margin-right: 8px;'> <b>{m['away_team']}</b></p>", unsafe_allow_html=True)
                         with c2_a:
                             res_a = st.selectbox("A", options=list(range(11)), index=int(curr_a), key=f"aa_{match_id}", label_visibility="collapsed")
                         
