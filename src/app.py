@@ -326,30 +326,84 @@ if authenticate_user():
                                 st.markdown(f"{nombre_mostrar}: Aún no envió su pronóstico ⏳")
                     st.divider()
                     
-# --- PESTAÑA 3: TABLA DE POSICIONES COMPACTA (BLINDADA) ---
+# --- PESTAÑA 3: TABLA DE POSICIONES COMPACTA (MOTOR INTEGRADO) ---
     with tab_t:
         st.markdown("### 🏆 Tabla de Posiciones")
         
-        # 1. BLINDAJE ANTI-ADMIN: Forzamos la comparación estrictamente en minúsculas y sin espacios
-        nombres_admins = {u["name"].strip().lower() for u in fetch_all_users() if u.get("is_admin", False)}
-        leaderboard = [row for row in get_leaderboard_data() if row["Jugador"].strip().lower() not in nombres_admins]
+        # 1. MOTOR DE CÁLCULO EN TIEMPO REAL (Bypasseamos database.py para romper el bug de caché)
+        todos_usuarios = fetch_all_users()
         
-        # 2. RENDERIZADO DE LA TABLA
-        tabla_html = "<table class='tabla-leaderboard'>"
-        tabla_html += "<tr><th>Pos</th><th>Jugador</th><th style='text-align:right;'>Puntos</th></tr>"
-        for idx, row in enumerate(leaderboard):
-            medal = "🥇" if idx == 0 else ("🥈" if idx == 1 else ("🥉" if idx == 2 else f"{idx + 1}"))
-            tabla_html += f"<tr><td>{medal}</td><td><b>{row['Jugador']}</b></td><td style='text-align:right; font-weight:bold; color:#1E90FF;'>{row['Puntos']} pts</td></tr>"
-        tabla_html += "</table>"
+        # Traemos los logs de predicciones y partidos directamente del servidor
+        logs_all = supabase.table("predictions_log").select("*").execute().data
+        matches_db = supabase.table("matches").select("*").execute().data
         
-        st.markdown(tabla_html, unsafe_allow_html=True)
+        # Filtramos partidos jugados (los que ya tienen resultado oficial cargado por el admin)
+        partidos_jugados = {
+            str(m["id"]): m for m in matches_db 
+            if m.get("home_score") is not None and str(m.get("home_score")).strip() != ""
+        }
         
-        # 3. BOTÓN DE REFRESH (Para romper el caché congelado de Streamlit)
+        leaderboard_data = []
+        
+        # Procesamos chamo por chamo
+        for u in todos_usuarios:
+            # FILTRO TOTAL ANTI-ADMIN: Si es admin o se llama admin, lo borramos del mapa aquí mismo
+            if u.get("is_admin", False) or u["name"].strip().lower() in ["admin", "administrator"]:
+                continue
+                
+            # Filtramos los votos en el log correspondientes a este usuario
+            preds_usuario = [l for l in logs_all if str(l["user_id"]) == str(u["id"])]
+            
+            # Nos quedamos estrictamente con el último voto registrado por partido (por si actualizaron)
+            ultimos_votos_usuario = {}
+            for log in sorted(preds_usuario, key=lambda x: x.get("id", 0)):
+                ultimos_votos_usuario[str(log["match_id"])] = log
+                
+            # Calculamos el acumulado usando tu función exacta de scoring
+            puntos_totales = 0
+            for m_id_str, match in partidos_jugados.items():
+                if m_id_str in ultimos_votos_usuario:
+                    pred = ultimos_votos_usuario[m_id_str]
+                    try:
+                        # Forzamos enteros limpios para tu función calculate_match_points
+                        pts = calculate_match_points(
+                            pred_home=int(pred["home_score"]),
+                            pred_away=int(pred["away_score"]),
+                            real_home=int(match["home_score"]),
+                            real_away=int(match["away_score"])
+                        )
+                        puntos_totales += pts
+                    except Exception as e:
+                        # Evita que la app se caiga si hay algún dato corrupto o nulo inesperado
+                        pass
+            
+            leaderboard_data.append({
+                "Jugador": u["name"],
+                "Puntos": puntos_totales
+            })
+            
+        # Ordenamos el ranking final de mayor a menor
+        leaderboard = sorted(leaderboard_data, key=lambda x: x["Puntos"], reverse=True)
+        
+        # 2. RENDERIZADO DE LA TABLA HTML
+        if not partidos_jugados:
+            st.info("⚽ La tabla se activará cuando el Admin cargue los primeros resultados oficiales en la base de datos.")
+        else:
+            tabla_html = "<table class='tabla-leaderboard'>"
+            tabla_html += "<tr><th>Pos</th><th>Jugador</th><th style='text-align:right;'>Puntos</th></tr>"
+            for idx, row in enumerate(leaderboard):
+                medal = "🥇" if idx == 0 else ("🥈" if idx == 1 else ("🥉" if idx == 2 else f"{idx + 1}"))
+                tabla_html += f"<tr><td>{medal}</td><td><b>{row['Jugador']}</b></td><td style='text-align:right; font-weight:bold; color:#1E90FF;'>{row['Puntos']} pts</td></tr>"
+            tabla_html += "</table>"
+            
+            st.markdown(tabla_html, unsafe_allow_html=True)
+        
+        # 3. BOTÓN DE REFRESH ABSOLUTO
         st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
-        if st.button("🔄 Recalcular Tabla (Limpiar Caché)", use_container_width=True):
-            st.cache_data.clear()  # Borra la memoria temporal de Streamlit y lo obliga a ir a Supabase
+        if st.button("🔄 Forzar Recálculo de Puntos (Limpiar Sistema)", use_container_width=True):
+            st.cache_data.clear()
             st.rerun()
-
+            
     # --- PESTAÑA 4: PANEL ADMINISTRADOR ---
     if tab_a:
         with tab_a:
