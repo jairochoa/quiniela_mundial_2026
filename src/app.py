@@ -13,15 +13,15 @@ from database import (
     update_user_password
 )
 
-# --- INYECCIÓN DE CSS AVANZADO: ELIMINACIÓN DE MARGIN-LEFT Y FIX DE ELLIPSIS ---
+# --- INYECCIÓN DE CSS CALIBRADO PARA MÓVILES (JALONAR MARCADORES A LA IZQUIERDA) ---
 st.markdown("""
 <style>
-    /* Oculta la barra de herramientas superior de Streamlit */
+    /* 1. Oculta la barra de herramientas superior de Streamlit */
     header[data-testid="stHeader"] {
         display: none !important;
     }
     
-    /* Mantiene las pestañas fijas arriba sin cortes */
+    /* 2. Mantiene las pestañas fijas arriba sin cortes */
     div[data-testid="stTabs"] > div:first-child {
         position: -webkit-sticky;
         position: sticky;
@@ -33,40 +33,41 @@ st.markdown("""
         border-bottom: 1px solid #E0E0E0;
     }
     
-    /* Reduce márgenes muertos en smartphones */
+    /* 3. Reduce márgenes muertos en smartphones */
     .block-container {
         padding-top: 0.5rem !important;
         padding-bottom: 0.5rem !important;
     }
     
-    /* Compacta el espaciado de los formularios */
+    /* 4. Compacta el espaciado de los formularios */
     div[data-testid="stForm"] {
         padding: 8px !important;
     }
     
-    /* Fuerza el comportamiento horizontal sin desbordamiento */
+    /* 5. SOLUCIÓN: Agrega un colchón derecho de 25px para JALONAR los marcadores hacia la izquierda */
     div[data-testid="stForm"] div[data-testid="stHorizontalBlock"] {
         flex-direction: row !important;
         flex-wrap: nowrap !important;
         align-items: center !important;
         gap: 6px !important;
+        padding-right: 25px !important; /* Empuja el contenido de la derecha hacia adentro */
+        box-sizing: border-box !important;
     }
     
-    /* BLINDAJE: Fuerza a las columnas a respetar el espacio disponible y permitir encogimiento */
+    /* 6. Bloquea el ancho de las columnas internas para que no ignoren la pantalla */
     div[data-testid="stForm"] div[data-testid="column"] {
         min-width: 0 !important;
         flex-shrink: 1 !important;
     }
     
-    /* SOLUCIÓN AL MARCADOR: Lo mueve hacia la izquierda de su columna de goles y acota su tamaño */
+    /* 7. Limita el tamaño de las cajas de goles y elimina márgenes rebeldes */
     div[data-testid="stForm"] div[data-testid="stSelectbox"] {
         max-width: 65px !important;
         width: 100% !important;
-        margin-left: 0 !important; /* Pegado al borde izquierdo de la columna 3 */
-        margin-right: auto !important;
+        margin: 0 !important;
     }
 
-    /* SOLUCIÓN AL RECORTE (ELLIPSIS): display: block permite el truncado automático en flexbox */
+    /* 8. Trunca nombres largos de países automáticamente si no caben */
     .team-text-container {
         margin: 0; 
         font-size: 14px; 
@@ -77,7 +78,6 @@ st.markdown("""
         width: 100%;
     }
     
-    /* Alineación vertical de la bandera con el texto en bloque */
     .team-text-container img {
         vertical-align: middle !important;
         margin-right: 6px !important;
@@ -197,14 +197,14 @@ if authenticate_user():
                     url_home = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['home_team'], DEFAULT_FLAG_CODE))
                     url_away = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['away_team'], DEFAULT_FLAG_CODE))
                     
-                    # FILA 1: Local (Distribución 7:3 con truncado automático de texto)
+                    # FILA 1: Local (Proporción 7:3 horizontal)
                     c1_h, c2_h = st.columns([7, 3])
                     with c1_h:
                         st.markdown(f"<p class='team-text-container'><img src='{url_home}' width='18'> <b>{m['home_team']}</b></p>", unsafe_allow_html=True)
                     with c2_h:
                         h_in = st.selectbox("H", options=list(range(11)), index=int(saved_home), key=f"uh_{match_id}", disabled=is_locked, label_visibility="collapsed")
                     
-                    # FILA 2: Visitante (Distribución 7:3 con truncado automático de texto)
+                    # FILA 2: Visitante (Proporción 7:3 horizontal)
                     c1_a, c2_a = st.columns([7, 3])
                     with c1_a:
                         st.markdown(f"<p class='team-text-container'><img src='{url_away}' width='18'> <b>{m['away_team']}</b></p>", unsafe_allow_html=True)
@@ -286,14 +286,14 @@ if authenticate_user():
                         url_home = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['home_team'], DEFAULT_FLAG_CODE))
                         url_away = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['away_team'], DEFAULT_FLAG_CODE))
                         
-                        # FILA 1 ADMIN: Local
+                        # FILA 1 ADMIN
                         c1_h, c2_h = st.columns([7, 3])
                         with c1_h:
                             st.markdown(f"<p class='team-text-container'><img src='{url_home}' width='18'> <b>{m['home_team']}</b></p>", unsafe_allow_html=True)
                         with c2_h:
                             res_h = st.selectbox("H", options=list(range(11)), index=int(curr_h), key=f"ah_{match_id}", label_visibility="collapsed")
                         
-                        # FILA 2 ADMIN: Visitante
+                        # FILA 2 ADMIN
                         c1_a, c2_a = st.columns([7, 3])
                         with c1_a:
                             st.markdown(f"<p class='team-text-container'><img src='{url_away}' width='18'> <b>{m['away_team']}</b></p>", unsafe_allow_html=True)
