@@ -326,12 +326,15 @@ if authenticate_user():
                                 st.markdown(f"{nombre_mostrar}: Aún no envió su pronóstico ⏳")
                     st.divider()
                     
-    # --- PESTAÑA 3: TABLA DE POSICIONES COMPACTA ---
+# --- PESTAÑA 3: TABLA DE POSICIONES COMPACTA (BLINDADA) ---
     with tab_t:
         st.markdown("### 🏆 Tabla de Posiciones")
-        nombres_admins = {u["name"] for u in fetch_all_users() if u.get("is_admin", False)}
-        leaderboard = [row for row in get_leaderboard_data() if row["Jugador"] not in nombres_admins]
         
+        # 1. BLINDAJE ANTI-ADMIN: Forzamos la comparación estrictamente en minúsculas y sin espacios
+        nombres_admins = {u["name"].strip().lower() for u in fetch_all_users() if u.get("is_admin", False)}
+        leaderboard = [row for row in get_leaderboard_data() if row["Jugador"].strip().lower() not in nombres_admins]
+        
+        # 2. RENDERIZADO DE LA TABLA
         tabla_html = "<table class='tabla-leaderboard'>"
         tabla_html += "<tr><th>Pos</th><th>Jugador</th><th style='text-align:right;'>Puntos</th></tr>"
         for idx, row in enumerate(leaderboard):
@@ -340,6 +343,12 @@ if authenticate_user():
         tabla_html += "</table>"
         
         st.markdown(tabla_html, unsafe_allow_html=True)
+        
+        # 3. BOTÓN DE REFRESH (Para romper el caché congelado de Streamlit)
+        st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
+        if st.button("🔄 Recalcular Tabla (Limpiar Caché)", use_container_width=True):
+            st.cache_data.clear()  # Borra la memoria temporal de Streamlit y lo obliga a ir a Supabase
+            st.rerun()
 
     # --- PESTAÑA 4: PANEL ADMINISTRADOR ---
     if tab_a:
