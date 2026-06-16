@@ -82,34 +82,34 @@ def get_leaderboard_data() -> list:
     users = fetch_all_users()
     matches = supabase.table("matches").select("*").execute().data
     
-    # Mapear partidos jugados (los que tienen score no nulo)
-    played_matches = {m["id"]: m for m in matches if m["home_score"] is not None}
+    # 🟢 NORMALIZACIÓN 1: Forzamos que los IDs de los partidos jugados sean STRINGS
+    played_matches = {str(m["id"]): m for m in matches if m.get("home_score") is not None}
     
     leaderboard = []
     
     for user in users:
-        # 🔥 CORRECCIÓN 1: Excluir al Admin de raíz para que no gaste procesamiento ni sume puntos
+        # Excluir al Admin de raíz
         if user.get("is_admin", False) or user["name"].strip().lower() == "admin":
             continue
             
-        # 🔥 CORRECCIÓN 2: Cambiamos 'updated_at' por 'id' (descendente).
-        # El 'id' es serial y autoincremental, lo que garantiza que lea los datos del JSON perfectamente.
         preds_response = supabase.table("predictions_log")\
             .select("*").eq("user_id", user["id"])\
             .order("id", desc=True).execute().data
             
+        # 🟢 NORMALIZACIÓN 2: Forzamos que los IDs de las predicciones también sean STRINGS
         latest_preds = {}
         for log in preds_response:
-            if log["match_id"] not in latest_preds:
-                latest_preds[log["match_id"]] = log
+            id_partido_str = str(log["match_id"])
+            if id_partido_str not in latest_preds:
+                latest_preds[id_partido_str] = log
         
         # Calcular puntos acumulados
         total_points = 0
-        for match_id, match in played_matches.items():
-            if match_id in latest_preds:
-                pred = latest_preds[match_id]
+        for match_id_str, match in played_matches.items():
+            if match_id_str in latest_preds:
+                pred = latest_preds[match_id_str]
                 
-                # Forzamos conversión a int por seguridad de tipos en la BD
+                # 🟢 NORMALIZACIÓN 3: Forzamos INT antes de pasárselos a tu función scoring
                 pts = calculate_match_points(
                     pred_home=int(pred["home_score"]),
                     pred_away=int(pred["away_score"]),
@@ -123,7 +123,6 @@ def get_leaderboard_data() -> list:
             "Puntos": total_points
         })
         
-    # Ordenar ranking de mayor a menor puntuación
     return sorted(leaderboard, key=lambda x: x["Puntos"], reverse=True)
 
 def update_user_password(user_id: int, new_hash: str) -> bool:
