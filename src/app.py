@@ -222,6 +222,13 @@ if authenticate_user():
                     st.success(f"✓ Tu voto actual: {int(saved_home)} - {int(saved_away)}", icon="ℹ️")
                 
                 with st.form(key=f"user_form_{match_id}"):
+                    # Si el usuario ya votó este partido, le clavamos un aviso verde impecable arriba
+                    if tiene_prediccion:
+                        st.markdown(f"""
+                        <div style="background-color: #E6F4EA; color: #137333; border-left: 4px solid #1E8E3E; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; margin-bottom: 6px; text-align: center;">
+                            ✓ REGISTRADO OFICIAL: {int(saved_home)} - {int(saved_away)}
+                        </div>
+                        """, unsafe_allow_html=True)
                     url_home = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['home_team'], DEFAULT_FLAG_CODE))
                     url_away = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['away_team'], DEFAULT_FLAG_CODE))
                     
