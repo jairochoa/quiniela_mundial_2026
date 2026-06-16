@@ -88,10 +88,15 @@ def get_leaderboard_data() -> list:
     leaderboard = []
     
     for user in users:
-        # Traer las últimas predicciones de este usuario específico
+        # 🔥 CORRECCIÓN 1: Excluir al Admin de raíz para que no gaste procesamiento ni sume puntos
+        if user.get("is_admin", False) or user["name"].strip().lower() == "admin":
+            continue
+            
+        # 🔥 CORRECCIÓN 2: Cambiamos 'updated_at' por 'id' (descendente).
+        # El 'id' es serial y autoincremental, lo que garantiza que lea los datos del JSON perfectamente.
         preds_response = supabase.table("predictions_log")\
             .select("*").eq("user_id", user["id"])\
-            .order("updated_at", desc=True).execute().data
+            .order("id", desc=True).execute().data
             
         latest_preds = {}
         for log in preds_response:
@@ -103,11 +108,13 @@ def get_leaderboard_data() -> list:
         for match_id, match in played_matches.items():
             if match_id in latest_preds:
                 pred = latest_preds[match_id]
+                
+                # Forzamos conversión a int por seguridad de tipos en la BD
                 pts = calculate_match_points(
-                    pred_home=pred["home_score"],
-                    pred_away=pred["away_score"],
-                    real_home=match["home_score"],
-                    real_away=match["away_score"]
+                    pred_home=int(pred["home_score"]),
+                    pred_away=int(pred["away_score"]),
+                    real_home=int(match["home_score"]),
+                    real_away=int(match["away_score"])
                 )
                 total_points += pts
         
