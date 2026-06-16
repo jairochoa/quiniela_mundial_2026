@@ -161,7 +161,7 @@ if authenticate_user():
                             st.toast("Contraseña cambiada con éxito. 🔐", icon="🎉")
         
         st.divider()
-        if st.button("🚪 Cerrar Sesión", use_container_width=True, type="secondary"):
+        if st.button("🚪 Cerrar Sesión", use_container_width=True, type="secondary", key="sidebar_logout_btn"):
             st.session_state.authenticated = False
             st.session_state.user_info = None
             st.rerun()
