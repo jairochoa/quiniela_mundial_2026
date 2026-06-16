@@ -166,8 +166,10 @@ if authenticate_user():
             time_limit = match_time - timedelta(hours=LOCK_WINDOW_HOURS)
             is_locked = now_utc >= time_limit
             
-            date_juego = match_time.date()
-            date_hoy = now_utc.date()
+            #  CÓDIGO CORREGIDO (CONVERTIDO A ENTORNO VENEZUELA UTC-4):
+            tz_ve = timezone(timedelta(hours=-4))
+            date_juego = match_time.astimezone(tz_ve).date()
+            date_hoy = now_utc.astimezone(tz_ve).date()
             date_manana = date_hoy + timedelta(days=1)
             tiene_prediccion = match_id in user_preds
 
