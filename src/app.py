@@ -55,7 +55,7 @@ st.markdown("""
         flex-wrap: nowrap !important;
         align-items: center !important;
         gap: 6px !important;
-        padding-right: 30px !important; /* Empuja el contenido de la derecha hacia adentro */
+        padding-right: 50px !important; /* Empuja el contenido de la derecha hacia adentro */
         box-sizing: border-box !important;
         margin-left: 0 !important;       /* ANULA el margen negativo izquierdo nativo */
         margin-right: 0 !important;      /* ANULA el margen negativo derecho que creaba el scroll */
