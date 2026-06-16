@@ -13,7 +13,7 @@ from database import (
     update_user_password
 )
 
-# --- INYECCIÓN DE CSS PARA CONGELAR PESTAÑAS (STICKY TABS) Y COMPACTAR INTERFAZ ---
+# --- INYECCIÓN DE CSS PARA CONGELAR PESTAÑAS, COMPACTAR INTERFAZ Y ACHICAR INPUTS ---
 st.markdown("""
 <style>
     /* Hace que la barra de pestañas se quede fija arriba al hacer scroll */
@@ -31,6 +31,14 @@ st.markdown("""
     .block-container {
         padding-top: 1rem !important;
         padding-bottom: 1rem !important;
+    }
+    /* ACHICA LAS CAJAS DE GOLES: Evita que se estiren innecesariamente en el móvil */
+    div[data-testid="stNumberInput"] {
+        max-width: 85px !important;
+    }
+    /* Reduce el espaciado interno de las tarjetas de partidos */
+    div[data-testid="stForm"] {
+        padding: 6px !important;
     }
     /* Estilos para la tabla compacta de posiciones */
     .tabla-leaderboard {
@@ -105,7 +113,7 @@ if authenticate_user():
         filtro_vista = st.selectbox(
             "🔍 Filtrar partidos:",
             ["📅 Hoy y Mañana", "⏳ Pendientes por Votar", "📖 Ver Todo el Fixture"],
-            label_visibility="collapsed" # Escondemos etiqueta para ahorrar espacio vertical
+            label_visibility="collapsed"
         )
         
         matches_filtrados = []
@@ -198,27 +206,20 @@ if authenticate_user():
                                 st.markdown(f"• *{u['name']}:* No jugó 🤷‍♂️")
                         st.divider()
 
-    # --- PESTAÑA 3: TABLA DE POSICIONES COMPACTA (SIN SCROLL SE VE TODO EL GRUPO) ---
+    # --- PESTAÑA 3: TABLA DE POSICIONES COMPACTA (SINOPSIS HTML SIN INDENTACIONES DE CÓDIGO) ---
     with tab_t:
         st.markdown("### 🏆 Tabla de Posiciones")
         leaderboard = get_leaderboard_data()
         
-        # Construimos una tabla HTML nativa ultraligera y compacta
         tabla_html = "<table class='tabla-leaderboard'>"
         tabla_html += "<tr><th>Pos</th><th>Jugador</th><th style='text-align:right;'>Puntos</th></tr>"
         
         for idx, row in enumerate(leaderboard):
             medal = "🥇" if idx == 0 else ("🥈" if idx == 1 else ("🥉" if idx == 2 else f"{idx + 1}"))
-            tabla_html += f"""
-            <tr>
-                <td>{medal}</td>
-                <td><b>{row['Jugador']}</b></td>
-                <td style='text-align:right; font-weight:bold; color:#1E90FF;'>{row['Puntos']} pts</td>
-            </tr>
-            """
+            # CORRECCIÓN DE LA FILA: En una sola línea plana para evitar la interpretación como código Markdown
+            tabla_html += f"<tr><td>{medal}</td><td><b>{row['Jugador']}</b></td><td style='text-align:right; font-weight:bold; color:#1E90FF;'>{row['Puntos']} pts</td></tr>"
+            
         tabla_html += "</table>"
-        
-        # Renderizado del HTML compacto
         st.markdown(tabla_html, unsafe_allow_html=True)
 
     # --- PESTAÑA 4: PANEL ADMINISTRADOR ---
