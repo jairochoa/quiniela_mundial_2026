@@ -260,12 +260,14 @@ if authenticate_user():
                     else:
                         st.form_submit_button(f"Tu marcador final: {int(saved_home)} - {int(saved_away)}", disabled=True, use_container_width=True)
 
-    # --- PESTAÑA 2: APUESTAS DEL GRUPO ---
+    # --- PESTAÑA 2: APUESTAS DEL GRUPO (BLINDADA Y CON FIXTURE OFICIAL) ---
     with tab_g:
         st.markdown("### 👥 Apuestas Abiertas")
+        
+        # RESTAURADO: Agrupamos estrictamente por la fecha original del fixture de la base de datos
         dict_dias = {}
         for m in matches:
-            fecha_dia = m["match_time"].split("T")[0]
+            fecha_dia = m["match_time"].split("T")[0] # June 16, 2026 queda intacto según el fixture
             if fecha_dia not in dict_dias:
                 dict_dias[fecha_dia] = []
             dict_dias[fecha_dia].append(m)
@@ -277,21 +279,14 @@ if authenticate_user():
             revelado = now_utc >= hora_revelacion
             
             with st.expander(f"📅 Jornada del {dia}", expanded=revelado):
+                logs_all = supabase.table("predictions_log").select("*").execute().data
+                all_users = fetch_all_users()
+                
+                # La conversión a Venezuela (UTC-4) se hace SOLO para mostrar el mensaje de texto informativo
                 if not revelado:
-                    st.warning(f"🔒 Revelación: {hora_revelacion.strftime('%H:%M UTC')}")
-                else:
-                    logs_all = supabase.table("predictions_log").select("*").execute().data
-                    all_users = fetch_all_users()
-                    for j in juegos:
-                        st.markdown(f"**⚽ {j['home_team']} vs {j['away_team']}**")
-                        for u in all_users:
-                            user_log = [l for l in logs_all if l["user_id"] == u["id"] and l["match_id"] == j["id"]]
-                            if user_log:
-                                ultimo_voto = sorted(user_log, key=lambda x: x["id"], reverse=True)[0]
-                                st.markdown(f"• *{u['name']}:* {ultimo_voto['home_score']} - {ultimo_voto['away_score']}")
-                            else:
-                                st.markdown(f"• *{u['name']}:* No jugó 🤷‍♂️")
-                        st.divider()
+                    tz_ve = timezone(timedelta(hours=-4))
+                    hora_ve_revelacion = hora_revelacion.astimezone(tz_ve).strftime("%I:%M %p")
+                    st.caption(f"🔒 Los pronósticos de los demás se liberarán a las {hora_ve_revelacion} de Venezuela (30 min antes del primer juego).")
 
     # --- PESTAÑA 3: TABLA DE POSICIONES COMPACTA ---
     with tab_t:
