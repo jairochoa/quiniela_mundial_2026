@@ -260,33 +260,60 @@ if authenticate_user():
                     else:
                         st.form_submit_button(f"Tu marcador final: {int(saved_home)} - {int(saved_away)}", disabled=True, use_container_width=True)
 
-    # --- PESTAÑA 2: APUESTAS DEL GRUPO (BLINDADA Y CON FIXTURE OFICIAL) ---
+# --- PESTAÑA 2: APUESTAS DEL GRUPO (AGRUPADO POR ROUND DE LA BASE DE DATOS) ---
     with tab_g:
         st.markdown("### 👥 Apuestas Abiertas")
         
-        # RESTAURADO: Agrupamos estrictamente por la fecha original del fixture de la base de datos
-        dict_dias = {}
+        # AGRUPACIÓN MAESTRA: Agrupamos los partidos por el campo 'round' de Supabase
+        dict_rounds = {}
         for m in matches:
-            fecha_dia = m["match_time"].split("T")[0] # June 16, 2026 queda intacto según el fixture
-            if fecha_dia not in dict_dias:
-                dict_dias[fecha_dia] = []
-            dict_dias[fecha_dia].append(m)
+            r = m.get("round", "Jornada")
+            if r not in dict_rounds:
+                dict_rounds[r] = []
+            dict_rounds[r].append(m)
             
-        for dia, juegos in dict_dias.items():
+        # Iteramos sobre cada Round/Jornada oficial del torneo
+        for round_name, juegos in dict_rounds.items():
             tiempos_juegos = [datetime.fromisoformat(j["match_time"].replace("Z", "+00:00")) for j in juegos]
-            primer_juego_del_dia = min(tiempos_juegos)
-            hora_revelacion = primer_juego_del_dia - timedelta(minutes=REVELATION_WINDOW_MINUTES)
+            
+            # Buscamos el juego que abre el round (en tu ejemplo, el de las 3:00 PM Venezuela)
+            primer_juego_del_round = min(tiempos_juegos)
+            hora_revelacion = primer_juego_del_round - timedelta(minutes=REVELATION_WINDOW_MINUTES)
             revelado = now_utc >= hora_revelacion
             
-            with st.expander(f"📅 Jornada del {dia}", expanded=revelado):
+            # El expander ahora lleva el nombre oficial del Round
+            with st.expander(f"🏆 {round_name}", expanded=revelado):
                 logs_all = supabase.table("predictions_log").select("*").execute().data
                 all_users = fetch_all_users()
                 
-                # La conversión a Venezuela (UTC-4) se hace SOLO para mostrar el mensaje de texto informativo
+                # Mensaje informativo calibrado a hora de Venezuela para los usuarios
                 if not revelado:
                     tz_ve = timezone(timedelta(hours=-4))
                     hora_ve_revelacion = hora_revelacion.astimezone(tz_ve).strftime("%I:%M %p")
-                    st.caption(f"🔒 Los pronósticos de los demás se liberarán a las {hora_ve_revelacion} de Venezuela (30 min antes del primer juego).")
+                    st.caption(f"🔒 Los pronósticos de este bloque se liberarán a las {hora_ve_revelacion} (30 min antes del primer juego).")
+                
+                for j in juegos:
+                    st.markdown(f"**⚽ {j['home_team']} vs {j['away_team']}**")
+                    
+                    for u in all_users:
+                        is_me = (u["id"] == user["id"])
+                        user_log = [l for l in logs_all if l["user_id"] == u["id"] and l["match_id"] == j["id"]]
+                        nombre_mostrar = f"• **Tú**" if is_me else f"• *{u['name']}*"
+                        
+                        if user_log:
+                            ultimo_voto = sorted(user_log, key=lambda x: x["id"], reverse=True)[0]
+                            
+                            # FILTRO DE PRIVACIDAD: Si ya se reveló el bloque entero O soy yo, veo el score
+                            if revelado or is_me:
+                                st.markdown(f"{nombre_mostrar}: {int(ultimo_voto['home_score'])} - {int(ultimo_voto['away_score'])}")
+                            else:
+                                st.markdown(f"{nombre_mostrar}: Ya envió su pronóstico 🔒")
+                        else:
+                            if is_me:
+                                st.markdown(f"{nombre_mostrar}: Aún no has votado 🤷‍♂️")
+                            else:
+                                st.markdown(f"{nombre_mostrar}: Aún no envió su pronóstico ⏳")
+                    st.divider()
 
     # --- PESTAÑA 3: TABLA DE POSICIONES COMPACTA ---
     with tab_t:
