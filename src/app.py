@@ -166,14 +166,14 @@ if authenticate_user():
                     # FILA 1: Local (Bandera + Nombre Justificado a la Izquierda | Selector a la Derecha)
                     c1_h, c2_h = st.columns([9, 3])
                     with c1_h:
-                        st.markdown(f"<p style='margin-top: 6px; margin-bottom: 0; font-size: 15px;'><img src='{url_home}' width='18' style='vertical-align: middle; margin-right: 6px;'> <b>{m['home_team']}</b></p>", unsafe_allow_html=True)
+                        st.markdown(f"<p style='margin-top: 6px; margin-bottom: 0; font-size: 14px;'><img src='{url_home}' width='15' style='vertical-align: middle; margin-right: 6px;'> <b>{m['home_team']}</b></p>", unsafe_allow_html=True)
                     with c2_h:
                         h_in = st.selectbox("H", options=list(range(11)), index=int(saved_home), key=f"uh_{match_id}", disabled=is_locked, label_visibility="collapsed")
                     
                     # FILA 2: Visitante (Bandera + Nombre Justificado a la Izquierda | Selector a la Derecha)
                     c1_a, c2_a = st.columns([9, 3])
                     with c1_a:
-                        st.markdown(f"<p style='margin-top: 6px; margin-bottom: 0; font-size: 15px;'><img src='{url_away}' width='18' style='vertical-align: middle; margin-right: 6px;'> <b>{m['away_team']}</b></p>", unsafe_allow_html=True)
+                        st.markdown(f"<p style='margin-top: 6px; margin-bottom: 0; font-size: 14px;'><img src='{url_away}' width='15' style='vertical-align: middle; margin-right: 6px;'> <b>{m['away_team']}</b></p>", unsafe_allow_html=True)
                     with c2_a:
                         a_in = st.selectbox("A", options=list(range(11)), index=int(saved_away), key=f"ua_{match_id}", disabled=is_locked, label_visibility="collapsed")
                     
