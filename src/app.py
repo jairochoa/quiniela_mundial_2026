@@ -190,7 +190,7 @@ if authenticate_user():
             
             with st.container(border=True):
                 info_juego = f"🏆 {m.get('round', 'Jornada')} | 📍 {m.get('ground', 'Estadio')} | 🇻🇪 {m.get('venezuela_time', '00:00')}"
-                st.caption(f"{'🔒 BLOQUEADO' if is_locked else '🟢 Abierto'} | {info_juego}")
+                st.caption(f"{'🔒 BLOQUEADO' if is_locked else '🟢 Abierto'} \n\n {info_juego}")
                 
                 with st.form(key=f"user_form_{match_id}"):
                     url_home = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['home_team'], DEFAULT_FLAG_CODE))
@@ -278,9 +278,12 @@ if authenticate_user():
                 curr_a = m["away_score"] if m["away_score"] is not None else 0
                 
                 with st.container(border=True):
-                    info_juego = f"🏆 {m.get('round', 'Jornada')} | 📍 {m.get('ground', 'Estadio')} | 🇻🇪 {m.get('venezuela_time', '00:00')}"
-                    st.caption(f"🆔 Partido #{match_id} | {info_juego}")
-                    
+                    # Calculamos el estado inline para el admin e incluimos su ID de partido en la primera línea
+                    m_time = datetime.fromisoformat(m["match_time"].replace("Z", "+00:00"))
+                    admin_is_locked = now_utc >= (m_time - timedelta(hours=LOCK_WINDOW_HOURS))
+                    estado_admin = f"🔒 BLOQUEADO (🆔 #{match_id})" if admin_is_locked else f"🟢 Abierto (🆔 #{match_id})"
+
+                    st.caption(f"{estado_admin}\n\n🏆 {m.get('round', 'Jornada')} | 📍 {m.get('ground', 'Estadio')} | 🇻🇪 {m.get('venezuela_time', '00:00')}")                    
                     with st.form(key=f"admin_form_{match_id}"):
                         url_home = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['home_team'], DEFAULT_FLAG_CODE))
                         url_away = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['away_team'], DEFAULT_FLAG_CODE))
