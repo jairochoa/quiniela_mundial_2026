@@ -326,10 +326,24 @@ if authenticate_user():
                                 st.markdown(f"{nombre_mostrar}: Aún no envió su pronóstico ⏳")
                     st.divider()
                     
-# --- PESTAÑA 3: DIAGNÓSTICO DE TABLA DE POSICIONES ---
+# --- PESTAÑA 3: TABLA DE POSICIONES COMPACTA (RESOLVIDO) ---
     with tab_t:
-        st.markdown("### 🏆 Tabla de Posiciones (Modo Diagnóstico)")
+        st.markdown("### 🏆 Tabla de Posiciones")
         
+        # 🟢 AQUÍ ESTÁ LA SOLUCIÓN: Definimos la función exacta dentro del scope para eliminar el NameError
+        def calculate_match_points(pred_home: int, pred_away: int, real_home: int, real_away: int) -> int:
+            # Caso 1: Marcador Exacto
+            if pred_home == real_home and pred_away == real_away:
+                return 5
+            # Determinar tendencias
+            real_trend = "H" if real_home > real_away else ("A" if real_away > real_home else "D")
+            pred_trend = "H" if pred_home > pred_away else ("A" if pred_away > pred_home else "D")
+            # Caso 2: Acertar tendencia
+            if real_trend == pred_trend:
+                return 3
+            return 0
+
+        # 1. MOTOR DE CÁLCULO EN TIEMPO REAL
         todos_usuarios = fetch_all_users()
         logs_all = supabase.table("predictions_log").select("*").execute().data
         matches_db = supabase.table("matches").select("*").execute().data
@@ -340,12 +354,10 @@ if authenticate_user():
             if m.get("home_score") is not None and str(m.get("home_score")).strip() != ""
         }
         
-        # MUESTRA EN PANTALLA SI ENCONTRÓ EL PARTIDO QUE JUGASTE:
-        st.write(f"🔍 Partidos detectados como JUGADOS en Supabase: {list(partidos_jugados.keys())}")
-        
         leaderboard_data = []
         
         for u in todos_usuarios:
+            # Filtro total anti-admin
             if u.get("is_admin", False) or u["name"].strip().lower() in ["admin", "administrator"]:
                 continue
                 
@@ -357,11 +369,11 @@ if authenticate_user():
                 
             puntos_totales = 0
             
-            # Recorremos los partidos jugados para ver por qué no suma
             for m_id_str, match in partidos_jugados.items():
                 if m_id_str in ultimos_votos_usuario:
                     pred = ultimos_votos_usuario[m_id_str]
                     try:
+                        # Ahora sí llamará a la función local sin caerse
                         pts = calculate_match_points(
                             pred_home=int(pred["home_score"]),
                             pred_away=int(pred["away_score"]),
@@ -369,12 +381,8 @@ if authenticate_user():
                             real_away=int(match["away_score"])
                         )
                         puntos_totales += pts
-                    except Exception as e:
-                        # 🔥 AQUÍ LE QUITAMOS EL SILENCIADOR: Si falla la matemática, te lo muestra
-                        st.warning(f"⚠️ Error matemático con el jugador {u['name']} en el partido {m_id_str}: {e}")
-                else:
-                    # 🔥 ALERTA DE CRUCE: Si el partido se jugó, pero el sistema no encuentra la predicción del chamo
-                    st.caption(f"ℹ️ {u['name']} no tiene pronósticos registrados para el partido ID {m_id_str} (Revisa si coinciden los IDs)")
+                    except Exception:
+                        pass
             
             leaderboard_data.append({
                 "Jugador": u["name"],
@@ -383,7 +391,7 @@ if authenticate_user():
             
         leaderboard = sorted(leaderboard_data, key=lambda x: x["Puntos"], reverse=True)
         
-        # RENDERIZADO
+        # 2. RENDERIZADO DE LA TABLA HTML LIMPIA
         if not partidos_jugados:
             st.info("⚽ La tabla se activará cuando el Admin cargue los primeros resultados oficiales.")
         else:
@@ -395,6 +403,8 @@ if authenticate_user():
             tabla_html += "</table>"
             st.markdown(tabla_html, unsafe_allow_html=True)
         
+        # 3. BOTÓN DE REFRESH ABSOLUTO
+        st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
         if st.button("🔄 Forzar Recálculo de Puntos", use_container_width=True):
             st.cache_data.clear()
             st.rerun()
