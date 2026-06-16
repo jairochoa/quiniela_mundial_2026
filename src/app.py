@@ -128,10 +128,6 @@ if authenticate_user():
                     elif nueva_clave != confirmar_clave:
                         st.error("Las contraseñas no coinciden.")
                     else:
-                        # Inyección modular de dependencias de autenticación y persistencia
-                        from src.auth import hash_password
-                        from src.database import update_user_password
-                        
                         # Generación del Hash criptográfico seguro
                         nuevo_hash = hash_password(nueva_clave)
                         
