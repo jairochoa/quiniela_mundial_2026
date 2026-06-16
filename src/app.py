@@ -50,7 +50,7 @@ st.markdown("""
         flex-wrap: nowrap !important;
         align-items: center !important;
         gap: 6px !important;
-        padding-right: 25px !important; /* Empuja el contenido de la derecha hacia adentro */
+        padding-right: 40px !important; /* Empuja el contenido de la derecha hacia adentro */
         box-sizing: border-box !important;
     }
     
@@ -197,15 +197,15 @@ if authenticate_user():
                     url_home = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['home_team'], DEFAULT_FLAG_CODE))
                     url_away = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['away_team'], DEFAULT_FLAG_CODE))
                     
-                    # FILA 1: Local (Proporción 7:3 horizontal)
-                    c1_h, c2_h = st.columns([7, 3])
+                    # FILA 1: Local (Proporción 6:4 horizontal)
+                    c1_h, c2_h = st.columns([6, 4])
                     with c1_h:
                         st.markdown(f"<p class='team-text-container'><img src='{url_home}' width='18'> <b>{m['home_team']}</b></p>", unsafe_allow_html=True)
                     with c2_h:
                         h_in = st.selectbox("H", options=list(range(11)), index=int(saved_home), key=f"uh_{match_id}", disabled=is_locked, label_visibility="collapsed")
                     
-                    # FILA 2: Visitante (Proporción 7:3 horizontal)
-                    c1_a, c2_a = st.columns([7, 3])
+                    # FILA 2: Visitante (Proporción 6:4 horizontal)
+                    c1_a, c2_a = st.columns([6, 4])
                     with c1_a:
                         st.markdown(f"<p class='team-text-container'><img src='{url_away}' width='18'> <b>{m['away_team']}</b></p>", unsafe_allow_html=True)
                     with c2_a:
@@ -287,14 +287,14 @@ if authenticate_user():
                         url_away = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['away_team'], DEFAULT_FLAG_CODE))
                         
                         # FILA 1 ADMIN
-                        c1_h, c2_h = st.columns([7, 3])
+                        c1_h, c2_h = st.columns([6, 4])
                         with c1_h:
                             st.markdown(f"<p class='team-text-container'><img src='{url_home}' width='18'> <b>{m['home_team']}</b></p>", unsafe_allow_html=True)
                         with c2_h:
                             res_h = st.selectbox("H", options=list(range(11)), index=int(curr_h), key=f"ah_{match_id}", label_visibility="collapsed")
                         
                         # FILA 2 ADMIN
-                        c1_a, c2_a = st.columns([7, 3])
+                        c1_a, c2_a = st.columns([6, 4])
                         with c1_a:
                             st.markdown(f"<p class='team-text-container'><img src='{url_away}' width='18'> <b>{m['away_team']}</b></p>", unsafe_allow_html=True)
                         with c2_a:
