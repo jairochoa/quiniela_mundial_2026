@@ -208,12 +208,16 @@ if authenticate_user():
         
         for m, match_time, is_locked, time_limit in matches_filtrados:
             match_id = m["id"]
+            tiene_prediccion = match_id in user_preds
             saved_home = user_preds[match_id]["home_score"] if match_id in user_preds else 0
             saved_away = user_preds[match_id]["away_score"] if match_id in user_preds else 0
             
             with st.container(border=True):
                 info_juego = f"🏆 {m.get('round', 'Jornada')} | 🇻🇪 {m.get('venezuela_time', '00:00')}"
-                st.caption(f"{'🔒 BLOQUEADO' if is_locked else '🟢 Abierto'} | {info_juego}")
+                estado = "🔒 BLOQUEADO" if is_locked else "🟢 Abierto"
+                if tiene_prediccion and not is_locked:
+                    estado += " | 💾 ¡PRONÓSTICO GUARDADO!"
+                st.caption(f"{estado}\n\n{info_juego}")
                 
                 with st.form(key=f"user_form_{match_id}"):
                     url_home = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['home_team'], DEFAULT_FLAG_CODE))
@@ -234,14 +238,18 @@ if authenticate_user():
                         a_in = st.selectbox("A", options=list(range(11)), index=int(saved_away), key=f"ua_{match_id}", disabled=is_locked, label_visibility="collapsed")
                     
                     
-                    # BOTÓN DE ACCIÓN
+                    #  CÓDIGO NUEVO (BOTÓN INTELIGENTE: CAMBIA COLOR Y TEXTO):
                     if not is_locked:
-                        if st.form_submit_button("Guardar Pronóstico", use_container_width=True):
+                        # Si ya existe voto, el botón se vuelve gris y le recuerda qué número guardó. Si no, se vuelve azul.
+                        texto_btn = f"🔄 Actualizar (Registrado: {int(saved_home)} - {int(saved_away)})" if tiene_prediccion else "💾 Guardar Pronóstico"
+                        tipo_btn = "secondary" if tiene_prediccion else "primary"
+                        
+                        if st.form_submit_button(texto_btn, use_container_width=True, type=tipo_btn):
                             save_prediction_log(user["id"], match_id, h_in, a_in)
-                            st.toast("💾 Registrado.", icon="✅")
+                            st.toast("💾 ¡Pronóstico guardado exitosamente!", icon="✅")
                             st.rerun()
                     else:
-                        st.form_submit_button(f"Tu marcador: {int(saved_home)} - {int(saved_away)}", disabled=True, use_container_width=True)
+                        st.form_submit_button(f"Tu marcador final: {int(saved_home)} - {int(saved_away)}", disabled=True, use_container_width=True)
 
     # --- PESTAÑA 2: APUESTAS DEL GRUPO ---
     with tab_g:
