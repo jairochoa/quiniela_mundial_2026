@@ -218,6 +218,8 @@ if authenticate_user():
                 if tiene_prediccion and not is_locked:
                     estado += " | 💾 ¡PRONÓSTICO GUARDADO!"
                 st.caption(f"{estado}\n\n{info_juego}")
+                if tiene_prediccion and not is_locked:
+                    st.success(f"✓ Tu voto actual: {int(saved_home)} - {int(saved_away)}", icon="ℹ️")
                 
                 with st.form(key=f"user_form_{match_id}"):
                     url_home = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['home_team'], DEFAULT_FLAG_CODE))
