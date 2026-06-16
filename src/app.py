@@ -17,7 +17,7 @@ from database import (
 st.markdown("""
 <style>
     /* Bloqueo total y absoluto de scroll horizontal a nivel raíz */
-    html, body, [data-testid="stApp"], [data-testid="stAppViewBlockContainer"] {
+    html, body, .main, section[data-testid="stMain"], [data-testid="stApp"], [data-testid="stAppViewBlockContainer"], [data-testid="stAppViewContainer"] {
         overflow-x: hidden !important;
     }
     
@@ -47,6 +47,7 @@ st.markdown("""
     /* 4. Compacta el espaciado de los formularios */
     div[data-testid="stForm"] {
         padding: 8px !important;
+        overflow: hidden !important; /* Camisa de fuerza para la tarjeta blanca */
     }
     
     /* 5. SOLUCIÓN: Agrega un colchón derecho de 50px para JALONAR los marcadores hacia la izquierda */
