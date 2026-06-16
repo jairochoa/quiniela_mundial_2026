@@ -155,9 +155,6 @@ if authenticate_user():
                     elif nueva_clave != confirmar_clave:
                         st.error("Las contraseñas no coinciden.")
                     else:
-                        from src.auth import hash_password
-                        from src.database import update_user_password
-                        
                         nuevo_hash = hash_password(nueva_clave)
                         if update_user_password(user["id"], nuevo_hash):
                             st.success("¡Clave actualizada!")
