@@ -13,28 +13,6 @@ from database import (
     update_user_password
 )
 
-¡Entendido perfectamente! Menos es más. Tu planteamiento de diseño es una solución de UX móvil impecable: al estructurar el partido en dos filas independientes (una para cada equipo), la tarjeta reduce su altura vertical a más de la mitad, permitiendo ver múltiples partidos en pantalla al mismo tiempo.
-
-Además, al mantener el uso de st.selectbox limitado a la proporción exacta de la columna, el teléfono abrirá su selector de rueda nativo sin desplegar el teclado numérico.
-
-Aquí tienes el código de src/app.py completamente optimizado, limpio y adaptado a esta nueva estructura horizontal justificada.
-
-master-code: src/app.py
-Python
-# Ruta del archivo: src/app.py
-import streamlit as st
-from datetime import datetime, timezone, timedelta
-from src.auth import authenticate_user
-from src.config import TEAM_FLAGS, LOCK_WINDOW_HOURS, REVELATION_WINDOW_MINUTES, FLAG_CDN_URL, DEFAULT_FLAG_CODE
-from src.database import (
-    fetch_all_matches, 
-    fetch_latest_user_predictions, 
-    save_prediction_log, 
-    get_leaderboard_data,
-    supabase,
-    fetch_all_users
-)
-
 # --- INYECCIÓN DE CSS AVANZADO: OPTIMIZACIÓN COMPACTA DE TARJETAS HORIZONTALES ---
 st.markdown("""
 <style>
