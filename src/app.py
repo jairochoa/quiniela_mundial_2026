@@ -13,15 +13,37 @@ from database import (
     update_user_password
 )
 
-# --- INYECCIÓN DE CSS AVANZADO: OCULTAR HEADER, FIJAR PESTAÑAS Y COMPACTAR TARJETAS ---
+¡Entendido perfectamente! Menos es más. Tu planteamiento de diseño es una solución de UX móvil impecable: al estructurar el partido en dos filas independientes (una para cada equipo), la tarjeta reduce su altura vertical a más de la mitad, permitiendo ver múltiples partidos en pantalla al mismo tiempo.
+
+Además, al mantener el uso de st.selectbox limitado a la proporción exacta de la columna, el teléfono abrirá su selector de rueda nativo sin desplegar el teclado numérico.
+
+Aquí tienes el código de src/app.py completamente optimizado, limpio y adaptado a esta nueva estructura horizontal justificada.
+
+master-code: src/app.py
+Python
+# Ruta del archivo: src/app.py
+import streamlit as st
+from datetime import datetime, timezone, timedelta
+from src.auth import authenticate_user
+from src.config import TEAM_FLAGS, LOCK_WINDOW_HOURS, REVELATION_WINDOW_MINUTES, FLAG_CDN_URL, DEFAULT_FLAG_CODE
+from src.database import (
+    fetch_all_matches, 
+    fetch_latest_user_predictions, 
+    save_prediction_log, 
+    get_leaderboard_data,
+    supabase,
+    fetch_all_users
+)
+
+# --- INYECCIÓN DE CSS AVANZADO: OPTIMIZACIÓN COMPACTA DE TARJETAS HORIZONTALES ---
 st.markdown("""
 <style>
-    /* 1. Oculta el encabezado nativo de Streamlit para evitar cortes y ganar pantalla */
+    /* Oculta la barra de herramientas superior de Streamlit */
     header[data-testid="stHeader"] {
         display: none !important;
     }
     
-    /* 2. Congela la barra de pestañas en el borde superior absoluto del teléfono */
+    /* Mantiene las pestañas fijas arriba sin cortes */
     div[data-testid="stTabs"] > div:first-child {
         position: -webkit-sticky;
         position: sticky;
@@ -33,20 +55,21 @@ st.markdown("""
         border-bottom: 1px solid #E0E0E0;
     }
     
-    /* 3. Reduce márgenes muertos del contenedor móvil */
+    /* Reduce márgenes muertos en smartphones */
     .block-container {
         padding-top: 0.5rem !important;
         padding-bottom: 0.5rem !important;
     }
     
-    /* 4. Minimiza el acolchado interno de los formularios */
+    /* Compacta el espaciado de los formularios */
     div[data-testid="stForm"] {
-        padding: 6px !important;
+        padding: 8px !important;
     }
     
-    /* 5. Centra las cajas de selección de goles */
+    /* Justifica y reduce el tamaño de las cajas selectoras de un dígito */
     div[data-testid="stSelectbox"] {
-        margin: 0 auto !important;
+        max-width: 75px !important;
+        margin-left: auto !important; /* Empuja el selector hacia la derecha */
     }
 
     /* Estilos para la tabla compacta de posiciones */
@@ -159,35 +182,33 @@ if authenticate_user():
                 st.caption(f"{'🔒 BLOQUEADO' if is_locked else '🟢 Abierto'} | {info_juego}")
                 
                 with st.form(key=f"user_form_{match_id}"):
-                    # LÍNEA 1: Ambos países con sus banderas en una sola tira horizontal centrada
                     url_home = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['home_team'], DEFAULT_FLAG_CODE))
                     url_away = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['away_team'], DEFAULT_FLAG_CODE))
                     
-                    st.markdown(f"""
-                    <p style='text-align: center; font-size: 15px; font-weight: bold; margin-bottom: 10px; margin-top: 2px;'>
-                        <img src='{url_home}' width='18'> {m['home_team']} 
-                        <span style='color: #888; font-weight: normal; margin: 0 8px;'>vs</span> 
-                        {m['away_team']} <img src='{url_away}' width='18'>
-                    </p>
-                    """, unsafe_allow_html=True)
+                    # FILA 1: Local (Bandera + Nombre Justificado a la Izquierda | Selector a la Derecha)
+                    c1_h, c2_h = st.columns([9, 3])
+                    with c1_h:
+                        st.markdown(f"<p style='margin-top: 6px; margin-bottom: 0; font-size: 15px;'><img src='{url_home}' width='18' style='vertical-align: middle; margin-right: 6px;'> <b>{m['home_team']}</b></p>", unsafe_allow_html=True)
+                    with c2_h:
+                        h_in = st.selectbox("H", options=list(range(11)), index=int(saved_home), key=f"uh_{match_id}", disabled=is_locked, label_visibility="collapsed")
                     
-                    # LÍNEA 2: Marcador compacto usando Selectbox (Menú desplegable de un toque)
-                    c1, c2, c3 = st.columns([5, 2, 5])
-                    with c1:
-                        h_in = st.selectbox("H", options=list(range(16)), index=int(saved_home), key=f"uh_{match_id}", disabled=is_locked, label_visibility="collapsed")
-                    with c2:
-                        st.markdown("<p style='text-align: center; font-size: 18px; font-weight: bold; margin-top: 4px;'>-</p>", unsafe_allow_html=True)
-                    with c3:
-                        a_in = st.selectbox("A", options=list(range(16)), index=int(saved_away), key=f"ua_{match_id}", disabled=is_locked, label_visibility="collapsed")
+                    # FILA 2: Visitante (Bandera + Nombre Justificado a la Izquierda | Selector a la Derecha)
+                    c1_a, c2_a = st.columns([9, 3])
+                    with c1_a:
+                        st.markdown(f"<p style='margin-top: 6px; margin-bottom: 0; font-size: 15px;'><img src='{url_away}' width='18' style='vertical-align: middle; margin-right: 6px;'> <b>{m['away_team']}</b></p>", unsafe_allow_html=True)
+                    with c2_a:
+                        a_in = st.selectbox("A", options=list(range(11)), index=int(saved_away), key=f"ua_{match_id}", disabled=is_locked, label_visibility="collapsed")
                     
-                    # LÍNEA 3: Botón de acción adaptativo abajo
+                    st.markdown("<div style='margin-top: 4px;'></div>", unsafe_allow_html=True)
+                    
+                    # BOTÓN DE ACCIÓN
                     if not is_locked:
                         if st.form_submit_button("Guardar Pronóstico", use_container_width=True):
                             save_prediction_log(user["id"], match_id, h_in, a_in)
                             st.toast("💾 Registrado.", icon="✅")
                             st.rerun()
                     else:
-                        st.form_submit_button(f"Tu Marcador Registrado: {int(saved_home)} - {int(saved_away)}", disabled=True, use_container_width=True)
+                        st.form_submit_button(f"Tu marcador: {int(saved_home)} - {int(saved_away)}", disabled=True, use_container_width=True)
 
     # --- PESTAÑA 2: APUESTAS DEL GRUPO ---
     with tab_g:
@@ -250,27 +271,24 @@ if authenticate_user():
                     st.caption(f"🆔 Partido #{match_id} | {info_juego}")
                     
                     with st.form(key=f"admin_form_{match_id}"):
-                        # LÍNEA 1: Países en una sola línea horizontal para el administrador
                         url_home = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['home_team'], DEFAULT_FLAG_CODE))
                         url_away = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['away_team'], DEFAULT_FLAG_CODE))
                         
-                        st.markdown(f"""
-                        <p style='text-align: center; font-size: 15px; font-weight: bold; margin-bottom: 10px; margin-top: 2px;'>
-                            <img src='{url_home}' width='18'> {m['home_team']} 
-                            <span style='color: #888; font-weight: normal; margin: 0 8px;'>vs</span> 
-                            {m['away_team']} <img src='{url_away}' width='18'>
-                        </p>
-                        """, unsafe_allow_html=True)
+                        # FILA 1 ADMIN: Local
+                        c1_h, c2_h = st.columns([9, 3])
+                        with c1_h:
+                            st.markdown(f"<p style='margin-top: 6px; margin-bottom: 0; font-size: 15px;'><img src='{url_home}' width='18' style='vertical-align: middle; margin-right: 6px;'> <b>{m['home_team']}</b></p>", unsafe_allow_html=True)
+                        with c2_h:
+                            res_h = st.selectbox("H", options=list(range(11)), index=int(curr_h), key=f"ah_{match_id}", label_visibility="collapsed")
                         
-                        # LÍNEA 2: Selectores de goles
-                        c1, c2, c3 = st.columns([5, 2, 5])
-                        with c1:
-                            res_h = st.selectbox("H", options=list(range(16)), index=int(curr_h), key=f"ah_{match_id}", label_visibility="collapsed")
-                        with c2:
-                            st.markdown("<p style='text-align: center; font-size: 18px; font-weight: bold; margin-top: 4px;'>-</p>", unsafe_allow_html=True)
-                        with c3:
-                            res_a = st.selectbox("A", options=list(range(16)), index=int(curr_a), key=f"aa_{match_id}", label_visibility="collapsed")
+                        # FILA 2 ADMIN: Visitante
+                        c1_a, c2_a = st.columns([9, 3])
+                        with c1_a:
+                            st.markdown(f"<p style='margin-top: 6px; margin-bottom: 0; font-size: 15px;'><img src='{url_away}' width='18' style='vertical-align: middle; margin-right: 6px;'> <b>{m['away_team']}</b></p>", unsafe_allow_html=True)
+                        with c2_a:
+                            res_a = st.selectbox("A", options=list(range(11)), index=int(curr_a), key=f"aa_{match_id}", label_visibility="collapsed")
                         
+                        st.markdown("<div style='margin-top: 4px;'></div>", unsafe_allow_html=True)
                         if st.form_submit_button("Publicar Resultado Oficial", use_container_width=True):
                             supabase.table("matches").update({"home_score": res_h, "away_score": res_a}).eq("id", match_id).execute()
                             st.toast("📢 Puntos recalculados.", icon="🚀")
