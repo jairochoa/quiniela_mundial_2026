@@ -108,41 +108,14 @@ if authenticate_user():
     user = st.session_state.user_info
     now_utc = datetime.now(timezone.utc)
     
-# --- BARRA LATERAL: GESTIÓN DE PERFIL, PASSWORD HASHING Y LOGOUT ---
+    # --- BARRA LATERAL UNIFICADA: PERFIL, CONTRASEÑA Y LOGOUT ---
     with st.sidebar:
         st.markdown(f"### 👤 Perfil")
         st.markdown(f"**Nombre:** {user['name']}")
         st.markdown(f"**Rol:** {'Administrador 🛠️' if user['is_admin'] else 'Jugador 🏃'}")
         st.divider()
         
-        # Componente Colapsable para optimizar espacio vertical en Smartphones
-        with st.expander("🔑 Cambiar mi Contraseña"):
-            with st.form("change_password_form", clear_on_submit=True):
-                nueva_clave = st.text_input("Nueva Contraseña", type="password", placeholder="Mínimo 6 caracteres")
-                confirmar_clave = st.text_input("Confirmar Contraseña", type="password", placeholder="Repite la contraseña")
-                submit_clave = st.form_submit_button("Actualizar Clave", use_container_width=True)
-                
-                if submit_clave:
-                    if len(nueva_clave) < 6:
-                        st.error("La contraseña debe tener al menos 6 caracteres.")
-                    elif nueva_clave != confirmar_clave:
-                        st.error("Las contraseñas no coinciden.")
-                    else:
-                        # Generación del Hash criptográfico seguro
-                        nuevo_hash = hash_password(nueva_clave)
-                        
-                        # Persistencia en la base de datos (Supabase)
-                        if update_user_password(user["id"], nuevo_hash):
-                            st.success("¡Clave actualizada!")
-                            st.toast("Contraseña cambiada con éxito. 🔐", icon="🎉")
-        
-        st.divider()
-        # Botón de destrucción de sesión activa
-        if st.button("🚪 Cerrar Sesión", use_container_width=True, type="secondary"):
-            st.session_state.authenticated = False
-            st.session_state.user_info = None
-            st.rerun()
-        
+        # Un solo expander limpio con IDs únicos para evitar colisiones
         with st.expander("🔑 Cambiar mi Contraseña"):
             with st.form("change_password_sidebar_form", clear_on_submit=True):
                 nueva_clave = st.text_input("Nueva Contraseña", type="password", placeholder="Mínimo 6 caracteres")
@@ -161,6 +134,7 @@ if authenticate_user():
                             st.toast("Contraseña cambiada con éxito. 🔐", icon="🎉")
         
         st.divider()
+        # Un solo botón de cerrar sesión blindado con su respectiva llave única
         if st.button("🚪 Cerrar Sesión", use_container_width=True, type="secondary", key="sidebar_logout_btn"):
             st.session_state.authenticated = False
             st.session_state.user_info = None

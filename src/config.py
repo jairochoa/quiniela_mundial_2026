@@ -116,6 +116,7 @@ TEAM_TRANSLATIONS = {
     "Canada": "Canadá",
     "Mexico": "México",
     "United States": "Estados Unidos",
+    "USA": "Estados Unidos",
 
     # CONMEBOL
     "Argentina": "Argentina",
@@ -129,6 +130,7 @@ TEAM_TRANSLATIONS = {
     "Austria": "Austria",
     "Belgium": "Bélgica",
     "Bosnia and Herzegovina": "Bosnia y Herzegovina",
+    "Bosnia & Herzegovina": "Bosnia y Herzegovina",
     "Croatia": "Croacia",
     "Czechia": "Chequia",
     "Czech Republic": "Chequia",
