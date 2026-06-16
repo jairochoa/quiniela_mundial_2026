@@ -13,7 +13,7 @@ from database import (
     update_user_password
 )
 
-# --- INYECCIÓN DE CSS AVANZADO: AJUSTE DE COLUMNAS Y TRUNCADO DE TEXTO ---
+# --- INYECCIÓN DE CSS AVANZADO: ELIMINACIÓN DE MARGIN-LEFT Y FIX DE ELLIPSIS ---
 st.markdown("""
 <style>
     /* Oculta la barra de herramientas superior de Streamlit */
@@ -49,34 +49,39 @@ st.markdown("""
         flex-direction: row !important;
         flex-wrap: nowrap !important;
         align-items: center !important;
-        gap: 4px !important;
+        gap: 6px !important;
     }
     
-    /* BLINDAJE: Evita que las columnas nativas ignoren el ancho de la pantalla */
+    /* BLINDAJE: Fuerza a las columnas a respetar el espacio disponible y permitir encogimiento */
     div[data-testid="stForm"] div[data-testid="column"] {
         min-width: 0 !important;
         flex-shrink: 1 !important;
     }
     
-    /* Acota los selectores de goles dentro de las tarjetas */
+    /* SOLUCIÓN AL MARCADOR: Lo mueve hacia la izquierda de su columna de goles y acota su tamaño */
     div[data-testid="stForm"] div[data-testid="stSelectbox"] {
-        max-width: 70px !important;
+        max-width: 65px !important;
         width: 100% !important;
+        margin-left: 0 !important; /* Pegado al borde izquierdo de la columna 3 */
+        margin-right: auto !important;
     }
 
-    /* Estilo para truncar nombres largos de países y evitar que empujen el layout */
+    /* SOLUCIÓN AL RECORTE (ELLIPSIS): display: block permite el truncado automático en flexbox */
     .team-text-container {
         margin: 0; 
         font-size: 14px; 
-        display: flex; 
-        align-items: center;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        display: block !important;
+        width: 100%;
     }
+    
+    /* Alineación vertical de la bandera con el texto en bloque */
     .team-text-container img {
-        margin-right: 6px;
-        flex-shrink: 0;
+        vertical-align: middle !important;
+        margin-right: 6px !important;
+        margin-top: -2px !important;
     }
 
     /* Estilos para la tabla compacta de posiciones */
@@ -192,14 +197,14 @@ if authenticate_user():
                     url_home = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['home_team'], DEFAULT_FLAG_CODE))
                     url_away = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['away_team'], DEFAULT_FLAG_CODE))
                     
-                    # FILA 1: Local (Optimizado con distribución 7:3 y CSS antidesbordamiento)
+                    # FILA 1: Local (Distribución 7:3 con truncado automático de texto)
                     c1_h, c2_h = st.columns([7, 3])
                     with c1_h:
                         st.markdown(f"<p class='team-text-container'><img src='{url_home}' width='18'> <b>{m['home_team']}</b></p>", unsafe_allow_html=True)
                     with c2_h:
                         h_in = st.selectbox("H", options=list(range(11)), index=int(saved_home), key=f"uh_{match_id}", disabled=is_locked, label_visibility="collapsed")
                     
-                    # FILA 2: Visitante (Optimizado con distribución 7:3 y CSS antidesbordamiento)
+                    # FILA 2: Visitante (Distribución 7:3 con truncado automático de texto)
                     c1_a, c2_a = st.columns([7, 3])
                     with c1_a:
                         st.markdown(f"<p class='team-text-container'><img src='{url_away}' width='18'> <b>{m['away_team']}</b></p>", unsafe_allow_html=True)
