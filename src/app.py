@@ -110,6 +110,11 @@ st.markdown("""
         padding: 10px 8px;
         border-bottom: 1px solid #F1F1F1;
     }
+    
+    div[data-testid="stFormSubmitButton"] {
+        margin-top: -14px !important;
+    }
+    
 </style>
 """, unsafe_allow_html=True)
 
@@ -208,20 +213,19 @@ if authenticate_user():
                     url_away = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['away_team'], DEFAULT_FLAG_CODE))
                     
                     # FILA 1: Local (Proporción 6:4 horizontal)
-                    c1_h, c2_h = st.columns([6, 4])
+                    c1_h, c2_h = st.columns([5.5, 4.5])
                     with c1_h:
                         st.markdown(f"<p class='team-text-container'><img src='{url_home}' width='18'> <b>{m['home_team']}</b></p>", unsafe_allow_html=True)
                     with c2_h:
                         h_in = st.selectbox("H", options=list(range(11)), index=int(saved_home), key=f"uh_{match_id}", disabled=is_locked, label_visibility="collapsed")
                     
                     # FILA 2: Visitante (Proporción 6:4 horizontal)
-                    c1_a, c2_a = st.columns([6, 4])
+                    c1_a, c2_a = st.columns([5.5, 4.5])
                     with c1_a:
                         st.markdown(f"<p class='team-text-container'><img src='{url_away}' width='18'> <b>{m['away_team']}</b></p>", unsafe_allow_html=True)
                     with c2_a:
                         a_in = st.selectbox("A", options=list(range(11)), index=int(saved_away), key=f"ua_{match_id}", disabled=is_locked, label_visibility="collapsed")
                     
-                    st.markdown("<div style='margin-top: 4px;'></div>", unsafe_allow_html=True)
                     
                     # BOTÓN DE ACCIÓN
                     if not is_locked:
@@ -297,20 +301,19 @@ if authenticate_user():
                         url_away = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['away_team'], DEFAULT_FLAG_CODE))
                         
                         # FILA 1 ADMIN
-                        c1_h, c2_h = st.columns([6, 4])
+                        c1_h, c2_h = st.columns([5.5, 4.5])
                         with c1_h:
                             st.markdown(f"<p class='team-text-container'><img src='{url_home}' width='18'> <b>{m['home_team']}</b></p>", unsafe_allow_html=True)
                         with c2_h:
                             res_h = st.selectbox("H", options=list(range(11)), index=int(curr_h), key=f"ah_{match_id}", label_visibility="collapsed")
                         
                         # FILA 2 ADMIN
-                        c1_a, c2_a = st.columns([6, 4])
+                        c1_a, c2_a = st.columns([5.5, 4.5])
                         with c1_a:
                             st.markdown(f"<p class='team-text-container'><img src='{url_away}' width='18'> <b>{m['away_team']}</b></p>", unsafe_allow_html=True)
                         with c2_a:
                             res_a = st.selectbox("A", options=list(range(11)), index=int(curr_a), key=f"aa_{match_id}", label_visibility="collapsed")
                         
-                        st.markdown("<div style='margin-top: 4px;'></div>", unsafe_allow_html=True)
                         if st.form_submit_button("Publicar Resultado Oficial", use_container_width=True):
                             supabase.table("matches").update({"home_score": res_h, "away_score": res_a}).eq("id", match_id).execute()
                             st.toast("📢 Puntos recalculados.", icon="🚀")
