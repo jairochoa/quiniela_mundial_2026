@@ -17,6 +17,7 @@ TEAM_FLAGS = {
     "México": "mx",
     "United States": "us",
     "Estados Unidos": "us",
+    "USA": "us",
 
     # CONMEBOL
     "Argentina": "ar",
@@ -33,6 +34,7 @@ TEAM_FLAGS = {
     "Bélgica": "be",
     "Bosnia and Herzegovina": "ba",
     "Bosnia y Herzegovina": "ba",
+    "Bosnia & Herzegovina": "ba",
     "Croatia": "hr",
     "Croacia": "hr",
     "Czechia": "cz",
@@ -99,7 +101,7 @@ TEAM_FLAGS = {
     "Túnez": "tn",
 
     # CONCACAF
-    "Curacao": "cw",
+    "Curaçao": "cw",
     "Curazao": "cw",
     "Haiti": "ht",
     "Haití": "ht",
@@ -116,6 +118,7 @@ TEAM_TRANSLATIONS = {
     "Canada": "Canadá",
     "Mexico": "México",
     "United States": "Estados Unidos",
+    "United States of America": "Estados Unidos",
     "USA": "Estados Unidos",
 
     # CONMEBOL
@@ -145,6 +148,7 @@ TEAM_TRANSLATIONS = {
     "Sweden": "Suecia",
     "Switzerland": "Suiza",
     "Türkiye": "Turquía",
+    "Turkey": "Turquía",
 
     # AFC
     "Australia": "Australia",
@@ -160,7 +164,7 @@ TEAM_TRANSLATIONS = {
     # CAF
     "Algeria": "Argelia",
     "Cape Verde": "Cabo Verde",
-    "DR Congo": "República Democrática del Congo",
+    "DR Congo": "RD del Congo",
     "Egypt": "Egipto",
     "Ghana": "Ghana",
     "Ivory Coast": "Costa de Marfil",
@@ -170,6 +174,7 @@ TEAM_TRANSLATIONS = {
     "Tunisia": "Túnez",
 
     # CONCACAF (Adicionales)
+    "Curaçao": "Curazao",
     "Curacao": "Curazao",
     "Haiti": "Haití",
     "Panama": "Panamá",
