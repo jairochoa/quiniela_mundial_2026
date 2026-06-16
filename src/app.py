@@ -295,7 +295,7 @@ if authenticate_user():
             
             with st.expander(f"🏆 {round_name}", expanded=jornada_activa):
                 logs_all = supabase.table("predictions_log").select("*").execute().data
-                all_users = fetch_all_users()
+                all_users = [u for u in fetch_all_users() if not u.get("is_admin", False)]
                 
                 # Mensaje informativo calibrado a hora de Venezuela para los usuarios
                 if not revelado:
@@ -329,7 +329,8 @@ if authenticate_user():
     # --- PESTAÑA 3: TABLA DE POSICIONES COMPACTA ---
     with tab_t:
         st.markdown("### 🏆 Tabla de Posiciones")
-        leaderboard = get_leaderboard_data()
+        nombres_admins = {u["name"] for u in fetch_all_users() if u.get("is_admin", False)}
+        leaderboard = [row for row in get_leaderboard_data() if row["Jugador"] not in nombres_admins]
         
         tabla_html = "<table class='tabla-leaderboard'>"
         tabla_html += "<tr><th>Pos</th><th>Jugador</th><th style='text-align:right;'>Puntos</th></tr>"
