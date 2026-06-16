@@ -144,7 +144,7 @@ if authenticate_user():
             st.rerun()
         
         with st.expander("🔑 Cambiar mi Contraseña"):
-            with st.form("change_password_form", clear_on_submit=True):
+            with st.form("change_password_sidebar_form", clear_on_submit=True):
                 nueva_clave = st.text_input("Nueva Contraseña", type="password", placeholder="Mínimo 6 caracteres")
                 confirmar_clave = st.text_input("Confirmar Contraseña", type="password", placeholder="Repite la contraseña")
                 submit_clave = st.form_submit_button("Actualizar Clave", use_container_width=True)
