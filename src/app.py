@@ -78,7 +78,10 @@ st.markdown("""
 
     /* 8. Trunca nombres largos de países automáticamente si no caben */
     .team-text-container {
-        margin: 0; 
+        margin-top: -5px !important; /* Margen negativo: Jala el texto hacia arriba. Calíbralo si te falta o sobra */
+        margin-bottom: 0 !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
         font-size: 14px; 
         white-space: nowrap;
         overflow: hidden;
