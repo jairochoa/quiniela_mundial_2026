@@ -409,18 +409,30 @@ if authenticate_user():
             st.cache_data.clear()
             st.rerun()
             
-    # --- PESTAÑA 4: PANEL ADMINISTRADOR ---
+# --- PESTAÑA 4: PANEL ADMINISTRADOR (UX INTELIGENTE) ---
     if tab_a:
         with tab_a:
             st.markdown("### ⚙️ Cargar Resultados Oficiales")
             for m in matches:
                 match_id = m["id"]
-                curr_h = m["home_score"] if m["home_score"] is not None else 0
-                curr_a = m["away_score"] if m["away_score"] is not None else 0
+                
+                # 1. DETECTOR DE UX: Evaluamos si el partido ya fue procesado y guardado en la BD
+                tiene_resultado = m["home_score"] is not None
+                
+                curr_h = m["home_score"] if tiene_resultado else 0
+                curr_a = m["away_score"] if tiene_resultado else 0
                 
                 with st.container(border=True):
                     info_juego = f"🏆 {m.get('round', 'Jornada')} | 🇻🇪 {m.get('venezuela_time', '00:00')}"
                     st.caption(f"🆔 Partido #{match_id} | {info_juego}")
+                    
+                    # 2. BANNER DE CERTEZA VISUAL: Para que el scroll no sea soso
+                    if tiene_resultado:
+                        st.markdown(f"""
+                        <div style="background-color: #FCE8E6; color: #C5221F; border-left: 4px solid #EA4335; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-bottom: 8px; text-align: center;">
+                            📢 RESULTADO OFICIAL PUBLICADO: {int(curr_h)} - {int(curr_a)}
+                        </div>
+                        """, unsafe_allow_html=True)
                     
                     with st.form(key=f"admin_form_{match_id}"):
                         url_home = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['home_team'], DEFAULT_FLAG_CODE))
@@ -440,7 +452,15 @@ if authenticate_user():
                         with c2_a:
                             res_a = st.selectbox("A", options=list(range(11)), index=int(curr_a), key=f"aa_{match_id}", label_visibility="collapsed")
                         
-                        if st.form_submit_button("Publicar Resultado Oficial", use_container_width=True):
+                        # 🟢 3. BOTÓN INTELIGENTE: Cambia dinámicamente de color y etiqueta
+                        texto_btn = f"🔄 Actualizar Score (Guardado: {int(curr_h)} - {int(curr_a)})" if tiene_resultado else "🚀 Publicar Resultado Oficial"
+                        tipo_btn = "secondary" if tiene_resultado else "primary"
+                        
+                        if st.form_submit_button(texto_btn, use_container_width=True, type=tipo_btn):
                             supabase.table("matches").update({"home_score": res_h, "away_score": res_a}).eq("id", match_id).execute()
-                            st.toast("📢 Puntos recalculados.", icon="🚀")
+                            
+                            # Limpiamos explícitamente el caché para que la pestaña 3 recalcule en el acto
+                            st.cache_data.clear() 
+                            
+                            st.toast("📢 Puntos recalculados con éxito.", icon="🚀")
                             st.rerun()
