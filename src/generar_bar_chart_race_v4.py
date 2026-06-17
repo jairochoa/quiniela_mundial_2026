@@ -39,7 +39,7 @@ def main():
         print("🤷‍♂️ No hay partidos jugados con resultados oficiales.")
         return
 
-    # 2. MATEMÁTICA ACUMULATIVA (Nombres amarrados a las etiquetas internas)
+    # 2. MATEMÁTICA ACUMULATIVA (Nombres amarrados adentro para simular movimiento real)
     print("🧮 Calculando historial de posiciones estrictas...")
     historial_puntos = []
 
@@ -51,13 +51,12 @@ def main():
 
         puntos_acumulados = 0
         
-        # Frame 0: Estado Inicial uniforme
+        # 🟢 CORRECCIÓN: Definimos la cadena fija de inicio directamente
         historial_puntos.append({
             "Jugador": u["name"],
-            "Frame_Animacion": "🏁 Inicio (Torneo Listo)",
-            "Puntos": 0,
-            # 🟢 TRUCO: Amarramos el nombre del jugador dentro de la etiqueta de la barra
-            "Texto_Barra": f" {u['name']} [0 pts]"
+            "Frame_Animacion": "🏁 Inicio (Torneo Listo)", 
+            "Puntos": puntos_acumulados,
+            "Etiqueta_Nombre": f" {u['name']}" # Nombre al inicio de la barra
         })
 
         for idx, match in enumerate(partidos_jugados, start=1):
@@ -83,13 +82,12 @@ def main():
                 "Jugador": u["name"],
                 "Frame_Animacion": label_frame_dinamico, 
                 "Puntos": puntos_acumulados,
-                # 🟢 El nombre y los puntos viajan juntos en el mismo contenedor
-                "Texto_Barra": f" {u['name']} [{puntos_acumulados} pts]"
+                "Etiqueta_Nombre": f" {u['name']}" # El nombre viajará con la barra
             })
 
     df_animar = pd.DataFrame(historial_puntos)
 
-    # 🎨 3. RENDERIZADO CON PALETA PREMIUM Y TEXTO INTERNO DINÁMICO
+    # 🎨 3. RENDERIZADO CON LOOK DE CARRERA DINÁMICA RECIPIENTE
     colores_elegantes = px.colors.qualitative.Prism
 
     fig = px.bar(
@@ -100,22 +98,22 @@ def main():
         animation_frame="Frame_Animacion",
         animation_group="Jugador",
         orientation="h",
-        # Le damos un margen extra a la derecha (+7) para que las etiquetas largas no se corten
-        range_x=[0, df_animar["Puntos"].max() + 7],
+        range_x=[0, df_animar["Puntos"].max() + 3],
         title="🏆 EVOLUCIÓN HISTÓRICA DE LA QUINIELA VALLE GRANDE 2026",
-        text="Texto_Barra", # 🟢 Reemplazamos Puntos_Label por nuestro bloque amarrado
+        # 🟢 TRUCO CLAVE: Cargamos la columna del nombre como el texto del bloque
+        text="Etiqueta_Nombre", 
         color_discrete_sequence=colores_elegantes
     )
 
-    # ⚙️ 4. CONTROL TOTAL DE ANIMACIÓN, RITMO Y DISEÑO LIMPIO
+    # ⚙️ 4. CONTROL DE ANIMACIÓN Y OCULTADO DE EJE DEFECTUOSO
     duracion_cuadro = 2200  
-    duracion_deslizar = 700 
+    duracion_deslizar = 700 # Movimiento de ranking rápido y reactivo
 
     fig.update_layout(
-        # 🟢 DESACTIVAMOS EL EJE Y ESTÁTICO: Quitamos los nombres fijos de la izquierda
+        # 🟢 HACK DE ILUSIÓN: Apagamos los textos estáticos externos del eje Y
         yaxis={
             "categoryorder": "total ascending",
-            "showticklabels": False,
+            "showticklabels": False, 
             "title": ""
         },
         showlegend=False,
@@ -125,8 +123,8 @@ def main():
         paper_bgcolor="#FFFFFF",
         plot_bgcolor="#F7FAFC",
         
-        # Reducimos el margen izquierdo de l=120 a l=40 porque ya no hay textos en el eje Y
-        margin=dict(l=40, r=40, t=140, b=120), 
+        # Reducimos el margen izquierdo a l=30 porque ya no hay texto afuera que ocupe espacio
+        margin=dict(l=30, r=40, t=140, b=120), 
         
         title={
             "text": "🏆 EVOLUCIÓN HISTÓRICA DE LA QUINIELA VALLE GRANDE 2026",
@@ -153,7 +151,7 @@ def main():
                 "label": "▶️ Play",
                 "method": "animate",
                 "args": [None, {
-                    "frame": {"duration": duracion_cuadro, "redraw": True}, 
+                    "frame": {"duration": duracion_cuadro, "redraw": False}, 
                     "transition": {"duration": duracion_deslizar, "easing": "cubic-in-out"},
                     "fromcurrent": True,
                     "mode": "immediate"
@@ -170,7 +168,19 @@ def main():
         }]
     )
 
-    # 🟢 5. INYECCIÓN PURA DE TEXTO SUPERIOR EN CADA FRAME
+    # 🟢 5. TRUCO FINAL: NOMBRE A LA IZQUIERDA Y PUNTOS A LA DERECHA (TODO ADENTRO)
+    fig.update_traces(
+        textposition="inside",
+        insidetextanchor="start", # Mantiene el nombre al inicio izquierdo
+        
+        # 🔥 EL CAMBIO MÁGICO: %{text} es el nombre del chamo, %{x} son sus puntos actuales
+        texttemplate=" %{text} • (%{x} pts)", 
+        
+        textfont=dict(size=14, weight="bold", color="white"),
+        marker=dict(line=dict(width=1.5, color="#FFFFFF"))
+    )
+
+    # Inyección limpia del texto del partido arriba (Se mantiene igual)
     for frame in fig.frames:
         frame.layout.update(
             annotations=[{
@@ -185,18 +195,11 @@ def main():
                 "yanchor": "bottom"
             }]
         )
-
-    # 🟢 AJUSTE VISUAL DE LAS BARRAS: Nombres alineados de forma prolija fuera/dentro
-    fig.update_traces(
-        textposition="outside", # Coloca el texto flotando justo al final de la barra
-        textfont=dict(size=13, weight="bold", color="#2D3748"), # Letra oscura elegante y legible
-        marker=dict(line=dict(width=1.5, color="#FFFFFF"))
-    )
     
     # 6. EXPORTACIÓN
     output_html = "carrera_quiniela_real.html"
     fig.write_html(output_html)
-    print(f"\n✅ ¡Listo, papá! Archivo 100% real generado en: '{output_html}'")
+    print(f"\n🏆 ¡VICTORIA TOTAL, PAPÁ! Gráfico premium generado en: '{output_html}'")
 
 if __name__ == "__main__":
     main()

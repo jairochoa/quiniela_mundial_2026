@@ -1798,5 +1798,365 @@
     "user_id": 13,
     "home_score": 2,
     "away_score": 1
+  },
+  {
+    "match_id": 61,
+    "home_team": "Portugal",
+    "away_team": "RD del Congo",
+    "usuario": "julian",
+    "user_id": 18,
+    "home_score": 3,
+    "away_score": 0
+  },
+  {
+    "match_id": 61,
+    "home_team": "Portugal",
+    "away_team": "RD del Congo",
+    "usuario": "gerson",
+    "user_id": 11,
+    "home_score": 2,
+    "away_score": 0
+  },
+  {
+    "match_id": 61,
+    "home_team": "Portugal",
+    "away_team": "RD del Congo",
+    "usuario": "guefo",
+    "user_id": 17,
+    "home_score": 4,
+    "away_score": 0
+  },
+  {
+    "match_id": 61,
+    "home_team": "Portugal",
+    "away_team": "RD del Congo",
+    "usuario": "tony",
+    "user_id": 12,
+    "home_score": 4,
+    "away_score": 0
+  },
+  {
+    "match_id": 61,
+    "home_team": "Portugal",
+    "away_team": "RD del Congo",
+    "usuario": "yiyo",
+    "user_id": 15,
+    "home_score": 3,
+    "away_score": 0
+  },
+  {
+    "match_id": 61,
+    "home_team": "Portugal",
+    "away_team": "RD del Congo",
+    "usuario": "hernan",
+    "user_id": 20,
+    "home_score": 3,
+    "away_score": 0
+  },
+  {
+    "match_id": 61,
+    "home_team": "Portugal",
+    "away_team": "RD del Congo",
+    "usuario": "merwis",
+    "user_id": 14,
+    "home_score": 2,
+    "away_score": 1
+  },
+  {
+    "match_id": 61,
+    "home_team": "Portugal",
+    "away_team": "RD del Congo",
+    "usuario": "vaca",
+    "user_id": 16,
+    "home_score": 3,
+    "away_score": 1
+  },
+  {
+    "match_id": 61,
+    "home_team": "Portugal",
+    "away_team": "RD del Congo",
+    "usuario": "marcelino",
+    "user_id": 19,
+    "home_score": 4,
+    "away_score": 1
+  },
+  {
+    "match_id": 61,
+    "home_team": "Portugal",
+    "away_team": "RD del Congo",
+    "usuario": "carlos",
+    "user_id": 13,
+    "home_score": 3,
+    "away_score": 0
+  },
+  {
+    "match_id": 67,
+    "home_team": "Inglaterra",
+    "away_team": "Croacia",
+    "usuario": "julian",
+    "user_id": 18,
+    "home_score": 0,
+    "away_score": 0
+  },
+  {
+    "match_id": 67,
+    "home_team": "Inglaterra",
+    "away_team": "Croacia",
+    "usuario": "gerson",
+    "user_id": 11,
+    "home_score": 3,
+    "away_score": 0
+  },
+  {
+    "match_id": 67,
+    "home_team": "Inglaterra",
+    "away_team": "Croacia",
+    "usuario": "guefo",
+    "user_id": 17,
+    "home_score": 2,
+    "away_score": 1
+  },
+  {
+    "match_id": 67,
+    "home_team": "Inglaterra",
+    "away_team": "Croacia",
+    "usuario": "tony",
+    "user_id": 12,
+    "home_score": 2,
+    "away_score": 2
+  },
+  {
+    "match_id": 67,
+    "home_team": "Inglaterra",
+    "away_team": "Croacia",
+    "usuario": "yiyo",
+    "user_id": 15,
+    "home_score": 2,
+    "away_score": 1
+  },
+  {
+    "match_id": 67,
+    "home_team": "Inglaterra",
+    "away_team": "Croacia",
+    "usuario": "hernan",
+    "user_id": 20,
+    "home_score": 2,
+    "away_score": 1
+  },
+  {
+    "match_id": 67,
+    "home_team": "Inglaterra",
+    "away_team": "Croacia",
+    "usuario": "merwis",
+    "user_id": 14,
+    "home_score": 2,
+    "away_score": 1
+  },
+  {
+    "match_id": 67,
+    "home_team": "Inglaterra",
+    "away_team": "Croacia",
+    "usuario": "vaca",
+    "user_id": 16,
+    "home_score": 2,
+    "away_score": 1
+  },
+  {
+    "match_id": 67,
+    "home_team": "Inglaterra",
+    "away_team": "Croacia",
+    "usuario": "marcelino",
+    "user_id": 19,
+    "home_score": 3,
+    "away_score": 2
+  },
+  {
+    "match_id": 67,
+    "home_team": "Inglaterra",
+    "away_team": "Croacia",
+    "usuario": "carlos",
+    "user_id": 13,
+    "home_score": 1,
+    "away_score": 0
+  },
+  {
+    "match_id": 68,
+    "home_team": "Ghana ",
+    "away_team": "Panam�",
+    "usuario": "julian",
+    "user_id": 18,
+    "home_score": 2,
+    "away_score": 0
+  },
+  {
+    "match_id": 68,
+    "home_team": "Ghana ",
+    "away_team": "Panam�",
+    "usuario": "gerson",
+    "user_id": 11,
+    "home_score": 1,
+    "away_score": 1
+  },
+  {
+    "match_id": 68,
+    "home_team": "Ghana ",
+    "away_team": "Panam�",
+    "usuario": "guefo",
+    "user_id": 17,
+    "home_score": 2,
+    "away_score": 1
+  },
+  {
+    "match_id": 68,
+    "home_team": "Ghana ",
+    "away_team": "Panam�",
+    "usuario": "tony",
+    "user_id": 12,
+    "home_score": 3,
+    "away_score": 1
+  },
+  {
+    "match_id": 68,
+    "home_team": "Ghana ",
+    "away_team": "Panam�",
+    "usuario": "yiyo",
+    "user_id": 15,
+    "home_score": 2,
+    "away_score": 0
+  },
+  {
+    "match_id": 68,
+    "home_team": "Ghana ",
+    "away_team": "Panam�",
+    "usuario": "hernan",
+    "user_id": 20,
+    "home_score": 1,
+    "away_score": 0
+  },
+  {
+    "match_id": 68,
+    "home_team": "Ghana ",
+    "away_team": "Panam�",
+    "usuario": "merwis",
+    "user_id": 14,
+    "home_score": 2,
+    "away_score": 1
+  },
+  {
+    "match_id": 68,
+    "home_team": "Ghana ",
+    "away_team": "Panam�",
+    "usuario": "vaca",
+    "user_id": 16,
+    "home_score": 2,
+    "away_score": 0
+  },
+  {
+    "match_id": 68,
+    "home_team": "Ghana ",
+    "away_team": "Panam�",
+    "usuario": "marcelino",
+    "user_id": 19,
+    "home_score": 2,
+    "away_score": 0
+  },
+  {
+    "match_id": 68,
+    "home_team": "Ghana ",
+    "away_team": "Panam�",
+    "usuario": "carlos",
+    "user_id": 13,
+    "home_score": 0,
+    "away_score": 0
+  },
+  {
+    "match_id": 62,
+    "home_team": "Uzbekist�n",
+    "away_team": "Colombia",
+    "usuario": "julian",
+    "user_id": 18,
+    "home_score": 0,
+    "away_score": 2
+  },
+  {
+    "match_id": 62,
+    "home_team": "Uzbekist�n",
+    "away_team": "Colombia",
+    "usuario": "gerson",
+    "user_id": 11,
+    "home_score": 1,
+    "away_score": 3
+  },
+  {
+    "match_id": 62,
+    "home_team": "Uzbekist�n",
+    "away_team": "Colombia",
+    "usuario": "guefo",
+    "user_id": 17,
+    "home_score": 0,
+    "away_score": 2
+  },
+  {
+    "match_id": 62,
+    "home_team": "Uzbekist�n",
+    "away_team": "Colombia",
+    "usuario": "tony",
+    "user_id": 12,
+    "home_score": 0,
+    "away_score": 2
+  },
+  {
+    "match_id": 62,
+    "home_team": "Uzbekist�n",
+    "away_team": "Colombia",
+    "usuario": "yiyo",
+    "user_id": 15,
+    "home_score": 1,
+    "away_score": 2
+  },
+  {
+    "match_id": 62,
+    "home_team": "Uzbekist�n",
+    "away_team": "Colombia",
+    "usuario": "hernan",
+    "user_id": 20,
+    "home_score": 0,
+    "away_score": 3
+  },
+  {
+    "match_id": 62,
+    "home_team": "Uzbekist�n",
+    "away_team": "Colombia",
+    "usuario": "merwis",
+    "user_id": 14,
+    "home_score": 0,
+    "away_score": 2
+  },
+  {
+    "match_id": 62,
+    "home_team": "Uzbekist�n",
+    "away_team": "Colombia",
+    "usuario": "vaca",
+    "user_id": 16,
+    "home_score": 0,
+    "away_score": 2
+  },
+  {
+    "match_id": 62,
+    "home_team": "Uzbekist�n",
+    "away_team": "Colombia",
+    "usuario": "marcelino",
+    "user_id": 19,
+    "home_score": 1,
+    "away_score": 2
+  },
+  {
+    "match_id": 62,
+    "home_team": "Uzbekist�n",
+    "away_team": "Colombia",
+    "usuario": "carlos",
+    "user_id": 13,
+    "home_score": 0,
+    "away_score": 2
   }
 ]
