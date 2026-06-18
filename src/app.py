@@ -228,7 +228,7 @@ if authenticate_user():
             with st.container(border=True):
                 info_juego = f"🏆 {m.get('round', 'Jornada')} | 🇻🇪 {m.get('venezuela_time', '00:00')}"
                 # 🟢 CÓDIGO NUEVO: Advertencia de bloqueo colectivo en el estado del contenedor
-                estado = "🔒 JORNADA BLOQUEADA" if is_locked else "🟢 Abierto"
+                estado = "🔒 BLOQUEADO" if is_locked else "🟢 Abierto"
                 if tiene_prediccion and not is_locked:
                     estado += " | 💾 ¡PRONÓSTICO GUARDADO!"
                 st.caption(f"{estado}\n\n{info_juego}")
@@ -240,7 +240,7 @@ if authenticate_user():
                     if tiene_prediccion:
                         st.markdown(f"""
                         <div style="background-color: #E6F4EA; color: #137333; border-left: 4px solid #1E8E3E; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; margin-bottom: 6px; text-align: center;">
-                            ✓ REGISTRADO OFICIAL: {int(saved_home)} - {int(saved_away)}
+                            ✓ TU PRONÓSTICO ES: {int(saved_home)} - {int(saved_away)}
                         </div>
                         """, unsafe_allow_html=True)
                     url_home = FLAG_CDN_URL.format(code=TEAM_FLAGS.get(m['home_team'], DEFAULT_FLAG_CODE))
@@ -271,11 +271,11 @@ if authenticate_user():
                             st.toast("💾 ¡Pronóstico guardado exitosamente!", icon="✅")
                             st.rerun()
                     else:
-                        st.form_submit_button(f"Jornada Cerrada: {int(saved_home)} - {int(saved_away)}", disabled=True, use_container_width=True)
+                        st.form_submit_button(f"Ya no puedes cambiar tu pronóstico: {int(saved_home)} - {int(saved_away)}", disabled=True, use_container_width=True)
 
 # --- PESTAÑA 2: APUESTAS DEL GRUPO (CON AUTO-APERTURA DE JORNADA ACTUAL) ---
     with tab_g:
-        st.markdown("### 👥 Apuestas Abiertas")
+        st.markdown("### 👥 Juegos Abiertos")
         
         # CEREBRO DE PROXIMIDAD: Encontramos el round actual basado en el partido más cercano a este preciso instante
         round_actual = ""
@@ -313,14 +313,14 @@ if authenticate_user():
                 # Mensaje informativo calibrado a hora de Venezuela para los usuarios
                 if not revelado:
                     hora_ve_revelacion = hora_revelacion.astimezone(tz_ve).strftime("%I:%M %p")
-                    st.caption(f"🔒 Los pronósticos de este bloque se liberarán a las {hora_ve_revelacion} (30 min antes del primer juego).")
+                    st.caption(f"🔒 Los pronósticos de este bloque se liberarán a las {hora_ve_revelacion} ({REVELATION_WINDOW_MINUTES} min antes del primer juego).")
                 
                 for j in juegos:
                     st.markdown(f"**⚽ {j['home_team']} vs {j['away_team']}**")
                     
                     for u in all_users:
                         is_me = (u["id"] == user["id"])
-                        user_log = [l for l in logs_all if l["user_id"] == u["id"] and l["match_id"] == j["id"]]
+                        user_log = [l for l in logs_all if l["user_id"] == u["id"] and l["match_id"] == j["id"] and not l["is_admin"]]
                         nombre_mostrar = f"• **Tú**" if is_me else f"• *{u['name']}*"
                         
                         if user_log:

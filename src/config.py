@@ -2,7 +2,7 @@
 
 # --- REGLAS DE TIEMPO (LÓGICA DE NEGOCIO) ---
 LOCK_WINDOW_HOURS = 1          # Tiempo antes del juego para bloquear la edición del usuario
-REVELATION_WINDOW_MINUTES = 30  # Tiempo antes del primer juego del día para revelar los votos del grupo
+REVELATION_WINDOW_MINUTES = 60  # Tiempo antes del primer juego del día para revelar los votos del grupo
 
 # --- CONFIGURACIÓN DE PROVEEDORES EXTERNOS ---
 FLAG_CDN_URL = "https://flagcdn.com/w40/{code}.png"
