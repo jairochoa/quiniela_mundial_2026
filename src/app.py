@@ -78,7 +78,7 @@ st.markdown("""
 
     /* 8. Trunca nombres largos de países automáticamente si no caben */
     .team-text-container {
-        margin-top: -20px !important; /* Margen negativo: Jala el texto hacia arriba. Calíbralo si te falta o sobra */
+        margin-top: -20px !important; /* Margen negativo: Jala el texto hacia arriba. Calíbralo si te falta o sobra */
         margin-bottom: 0 !important;
         margin-left: 0 !important;
         margin-right: 0 !important;
@@ -165,6 +165,16 @@ if authenticate_user():
     matches = fetch_all_matches()
     user_preds = fetch_latest_user_predictions(user["id"])
     
+    # 🟢 CÓDIGO NUEVO: Precalcular el partido inaugural de cada jornada (round) en hora de Venezuela
+    tz_ve = timezone(timedelta(hours=-4))
+    primer_partido_por_round = {}
+    for m in matches:
+        r_name = m.get("round", "Jornada")
+        if m.get("match_time"):
+            m_time = datetime.fromisoformat(m["match_time"].replace("Z", "+00:00"))
+            if r_name not in primer_partido_por_round or m_time < primer_partido_por_round[r_name]:
+                primer_partido_por_round[r_name] = m_time
+
     # 2. Configuración dinámica de Pestañas Móviles
     if user["is_admin"]:
         tab_p, tab_g, tab_t, tab_a = st.tabs(["📝 Votos", "👥 Grupo", "📊 Tabla", "⚙️ Admin"])
@@ -183,12 +193,15 @@ if authenticate_user():
         matches_filtrados = []
         for m in matches:
             match_id = m["id"]
+            round_name = m.get("round", "Jornada")
             match_time = datetime.fromisoformat(m["match_time"].replace("Z", "+00:00"))
-            time_limit = match_time - timedelta(hours=LOCK_WINDOW_HOURS)
+            
+            # 🟢 CÓDIGO NUEVO: Evaluar bloqueo basado en el primer juego de SU JORNADA (1 hora antes)
+            primer_juego_time = primer_partido_por_round.get(round_name, match_time)
+            time_limit = primer_juego_time - timedelta(hours=1)
             is_locked = now_utc >= time_limit
             
-            #  CÓDIGO CORREGIDO (CONVERTIDO A ENTORNO VENEZUELA UTC-4):
-            tz_ve = timezone(timedelta(hours=-4))
+            # CÓDIGO CORREGIDO (CONVERTIDO A ENTORNO VENEZUELA UTC-4):
             date_juego = match_time.astimezone(tz_ve).date()
             date_hoy = now_utc.astimezone(tz_ve).date()
             date_manana = date_hoy + timedelta(days=1)
@@ -214,7 +227,8 @@ if authenticate_user():
             
             with st.container(border=True):
                 info_juego = f"🏆 {m.get('round', 'Jornada')} | 🇻🇪 {m.get('venezuela_time', '00:00')}"
-                estado = "🔒 BLOQUEADO" if is_locked else "🟢 Abierto"
+                # 🟢 CÓDIGO NUEVO: Advertencia de bloqueo colectivo en el estado del contenedor
+                estado = "🔒 JORNADA BLOQUEADA" if is_locked else "🟢 Abierto"
                 if tiene_prediccion and not is_locked:
                     estado += " | 💾 ¡PRONÓSTICO GUARDADO!"
                 st.caption(f"{estado}\n\n{info_juego}")
@@ -246,8 +260,7 @@ if authenticate_user():
                     with c2_a:
                         a_in = st.selectbox("A", options=list(range(11)), index=int(saved_away), key=f"ua_{match_id}", disabled=is_locked, label_visibility="collapsed")
                     
-                    
-                    #  CÓDIGO NUEVO (BOTÓN INTELIGENTE: CAMBIA COLOR Y TEXTO):
+                    # CÓDIGO NUEVO (BOTÓN INTELIGENTE: CAMBIA COLOR Y TEXTO):
                     if not is_locked:
                         # Si ya existe voto, el botón se vuelve gris y le recuerda qué número guardó. Si no, se vuelve azul.
                         texto_btn = f"🔄 Actualizar (Registrado: {int(saved_home)} - {int(saved_away)})" if tiene_prediccion else "💾 Guardar Pronóstico"
@@ -258,7 +271,7 @@ if authenticate_user():
                             st.toast("💾 ¡Pronóstico guardado exitosamente!", icon="✅")
                             st.rerun()
                     else:
-                        st.form_submit_button(f"Tu marcador final: {int(saved_home)} - {int(saved_away)}", disabled=True, use_container_width=True)
+                        st.form_submit_button(f"Jornada Cerrada: {int(saved_home)} - {int(saved_away)}", disabled=True, use_container_width=True)
 
 # --- PESTAÑA 2: APUESTAS DEL GRUPO (CON AUTO-APERTURA DE JORNADA ACTUAL) ---
     with tab_g:
@@ -299,7 +312,6 @@ if authenticate_user():
                 
                 # Mensaje informativo calibrado a hora de Venezuela para los usuarios
                 if not revelado:
-                    tz_ve = timezone(timedelta(hours=-4))
                     hora_ve_revelacion = hora_revelacion.astimezone(tz_ve).strftime("%I:%M %p")
                     st.caption(f"🔒 Los pronósticos de este bloque se liberarán a las {hora_ve_revelacion} (30 min antes del primer juego).")
                 
@@ -363,12 +375,13 @@ if authenticate_user():
                 
             preds_usuario = [l for l in logs_all if str(l["user_id"]) == str(u["id"])]
             
+            puntos_totales = 0
+            
+            # Agrupar los últimos votos del usuario
             ultimos_votos_usuario = {}
             for log in sorted(preds_usuario, key=lambda x: x.get("id", 0)):
                 ultimos_votos_usuario[str(log["match_id"])] = log
                 
-            puntos_totales = 0
-            
             for m_id_str, match in partidos_jugados.items():
                 if m_id_str in ultimos_votos_usuario:
                     pred = ultimos_votos_usuario[m_id_str]
@@ -462,5 +475,5 @@ if authenticate_user():
                             # Limpiamos explícitamente el caché para que la pestaña 3 recalcule en el acto
                             st.cache_data.clear() 
                             
-                            st.toast("📢 Puntos recalculados con éxito.", icon="🚀")
+                            st.toast("📢 Puntos recalculated con éxito.", icon="🚀")
                             st.rerun()
