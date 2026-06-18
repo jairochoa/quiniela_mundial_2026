@@ -58,17 +58,23 @@ def cargar_historico():
             print(f"⚠️ Alerta: El jugador '{p['usuario']}' no está registrado en la App. Saltando fila.")
             errores += 1
 
-    # 5. Inyección Masiva (Bulk Insert)
+# 5. Inyección Inteligente (Upsert / Ignorar Duplicados)
     if registros_a_subir:
         print(f"📦 Preparando paquete masivo con {len(registros_a_subir)} registros...")
         try:
-            res = supabase.table("predictions_log").insert(registros_a_subir).execute()
+            # 🟢 CAMBIO AQUÍ: Usamos .upsert() especificando el conflicto
+            res = supabase.table("predictions_log").upsert(
+                registros_a_subir, 
+                on_conflict="user_id,match_id"
+            ).execute()
+            
             if res.data:
-                print(f"✅ ¡ÉXITO! {len(registros_a_subir)} pronósticos viejos han sido inyectados y sistematizados.")
+                print(f"✅ ¡ÉXITO! El lote ha sido procesado de forma inteligente.")
+                print(f"💡 Los registros nuevos se crearon y los existentes se actualizaron/mantuvieron.")
                 if errores > 0:
                     print(f"👀 Nota: Se saltaron {errores} registros por nombres mal escritos.")
         except Exception as e:
-            print(f"❌ Error crítico al insertar el lote en Supabase: {e}")
+            print(f"❌ Error crítico al procesar el lote (upsert) en Supabase: {e}")
     else:
         print("🤷‍♂️ No se generó ningún registro válido para subir al servidor.")
 

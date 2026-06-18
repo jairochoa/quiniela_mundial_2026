@@ -120,8 +120,8 @@ def main():
     # 5. CREACIÓN DE LA ANIMACIÓN CON PLOTLY EXPRESS
     print("🎬 Armando los cuadros de animación...")
     
-    duracion_cuadro = 2500 
-    duracion_deslizar = 900 
+    duracion_cuadro = 1500 
+    duracion_deslizar = 600 
 
     fig = px.bar(
         df,
@@ -161,7 +161,7 @@ def main():
         margin=dict(l=20, r=40, t=220, b=40), 
         
         title={
-            "text": "🏆 EVOLUCIÓN HISTÓRICA DE LA QUINIELA VALLE GRANDE 2026",
+            "text": "🏆 TABLA DE LÍDERES - QUINIELA VALLE GRANDE 2026",
             "y": 0.96,          
             "x": 0.0,           
             "xanchor": "left",

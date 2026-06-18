@@ -2158,5 +2158,365 @@
     "user_id": 13,
     "home_score": 0,
     "away_score": 2
+  },
+  {
+    "match_id": 3,
+    "home_team": "Chequia",
+    "away_team": "Sur�frica",
+    "usuario": "julian",
+    "user_id": 18,
+    "home_score": 1,
+    "away_score": 0
+  },
+  {
+    "match_id": 3,
+    "home_team": "Chequia",
+    "away_team": "Sur�frica",
+    "usuario": "gerson",
+    "user_id": 11,
+    "home_score": 2,
+    "away_score": 0
+  },
+  {
+    "match_id": 3,
+    "home_team": "Chequia",
+    "away_team": "Sur�frica",
+    "usuario": "guefo",
+    "user_id": 17,
+    "home_score": 2,
+    "away_score": 1
+  },
+  {
+    "match_id": 3,
+    "home_team": "Chequia",
+    "away_team": "Sur�frica",
+    "usuario": "tony",
+    "user_id": 12,
+    "home_score": 2,
+    "away_score": 1
+  },
+  {
+    "match_id": 3,
+    "home_team": "Chequia",
+    "away_team": "Sur�frica",
+    "usuario": "yiyo",
+    "user_id": 15,
+    "home_score": 2,
+    "away_score": 0
+  },
+  {
+    "match_id": 3,
+    "home_team": "Chequia",
+    "away_team": "Sur�frica",
+    "usuario": "hernan",
+    "user_id": 20,
+    "home_score": 3,
+    "away_score": 1
+  },
+  {
+    "match_id": 3,
+    "home_team": "Chequia",
+    "away_team": "Sur�frica",
+    "usuario": "merwis",
+    "user_id": 14,
+    "home_score": 2,
+    "away_score": 1
+  },
+  {
+    "match_id": 3,
+    "home_team": "Chequia",
+    "away_team": "Sur�frica",
+    "usuario": "vaca",
+    "user_id": 16,
+    "home_score": 2,
+    "away_score": 1
+  },
+  {
+    "match_id": 3,
+    "home_team": "Chequia",
+    "away_team": "Sur�frica",
+    "usuario": "marcelino",
+    "user_id": 19,
+    "home_score": 2,
+    "away_score": 1
+  },
+  {
+    "match_id": 3,
+    "home_team": "Chequia",
+    "away_team": "Sur�frica",
+    "usuario": "carlos",
+    "user_id": 13,
+    "home_score": 2,
+    "away_score": 0
+  },
+  {
+    "match_id": 9,
+    "home_team": "Suiza",
+    "away_team": "Bosnia y Herzegovina",
+    "usuario": "julian",
+    "user_id": 18,
+    "home_score": 1,
+    "away_score": 0
+  },
+  {
+    "match_id": 9,
+    "home_team": "Suiza",
+    "away_team": "Bosnia y Herzegovina",
+    "usuario": "gerson",
+    "user_id": 11,
+    "home_score": 2,
+    "away_score": 0
+  },
+  {
+    "match_id": 9,
+    "home_team": "Suiza",
+    "away_team": "Bosnia y Herzegovina",
+    "usuario": "guefo",
+    "user_id": 17,
+    "home_score": 2,
+    "away_score": 1
+  },
+  {
+    "match_id": 9,
+    "home_team": "Suiza",
+    "away_team": "Bosnia y Herzegovina",
+    "usuario": "tony",
+    "user_id": 12,
+    "home_score": 2,
+    "away_score": 1
+  },
+  {
+    "match_id": 9,
+    "home_team": "Suiza",
+    "away_team": "Bosnia y Herzegovina",
+    "usuario": "yiyo",
+    "user_id": 15,
+    "home_score": 2,
+    "away_score": 1
+  },
+  {
+    "match_id": 9,
+    "home_team": "Suiza",
+    "away_team": "Bosnia y Herzegovina",
+    "usuario": "hernan",
+    "user_id": 20,
+    "home_score": 2,
+    "away_score": 0
+  },
+  {
+    "match_id": 9,
+    "home_team": "Suiza",
+    "away_team": "Bosnia y Herzegovina",
+    "usuario": "merwis",
+    "user_id": 14,
+    "home_score": 2,
+    "away_score": 1
+  },
+  {
+    "match_id": 9,
+    "home_team": "Suiza",
+    "away_team": "Bosnia y Herzegovina",
+    "usuario": "vaca",
+    "user_id": 16,
+    "home_score": 2,
+    "away_score": 1
+  },
+  {
+    "match_id": 9,
+    "home_team": "Suiza",
+    "away_team": "Bosnia y Herzegovina",
+    "usuario": "marcelino",
+    "user_id": 19,
+    "home_score": 3,
+    "away_score": 1
+  },
+  {
+    "match_id": 9,
+    "home_team": "Suiza",
+    "away_team": "Bosnia y Herzegovina",
+    "usuario": "carlos",
+    "user_id": 13,
+    "home_score": 2,
+    "away_score": 0
+  },
+  {
+    "match_id": 10,
+    "home_team": "Canad�",
+    "away_team": "Catar",
+    "usuario": "julian",
+    "user_id": 18,
+    "home_score": 2,
+    "away_score": 0
+  },
+  {
+    "match_id": 10,
+    "home_team": "Canad�",
+    "away_team": "Catar",
+    "usuario": "gerson",
+    "user_id": 11,
+    "home_score": 3,
+    "away_score": 0
+  },
+  {
+    "match_id": 10,
+    "home_team": "Canad�",
+    "away_team": "Catar",
+    "usuario": "guefo",
+    "user_id": 17,
+    "home_score": 2,
+    "away_score": 1
+  },
+  {
+    "match_id": 10,
+    "home_team": "Canad�",
+    "away_team": "Catar",
+    "usuario": "tony",
+    "user_id": 12,
+    "home_score": 2,
+    "away_score": 1
+  },
+  {
+    "match_id": 10,
+    "home_team": "Canad�",
+    "away_team": "Catar",
+    "usuario": "yiyo",
+    "user_id": 15,
+    "home_score": 2,
+    "away_score": 0
+  },
+  {
+    "match_id": 10,
+    "home_team": "Canad�",
+    "away_team": "Catar",
+    "usuario": "hernan",
+    "user_id": 20,
+    "home_score": 2,
+    "away_score": 0
+  },
+  {
+    "match_id": 10,
+    "home_team": "Canad�",
+    "away_team": "Catar",
+    "usuario": "merwis",
+    "user_id": 14,
+    "home_score": 2,
+    "away_score": 1
+  },
+  {
+    "match_id": 10,
+    "home_team": "Canad�",
+    "away_team": "Catar",
+    "usuario": "vaca",
+    "user_id": 16,
+    "home_score": 2,
+    "away_score": 0
+  },
+  {
+    "match_id": 10,
+    "home_team": "Canad�",
+    "away_team": "Catar",
+    "usuario": "marcelino",
+    "user_id": 19,
+    "home_score": 2,
+    "away_score": 0
+  },
+  {
+    "match_id": 10,
+    "home_team": "Canad�",
+    "away_team": "Catar",
+    "usuario": "carlos",
+    "user_id": 13,
+    "home_score": 1,
+    "away_score": 0
+  },
+  {
+    "match_id": 4,
+    "home_team": "M�xico",
+    "away_team": "Corea del Sur",
+    "usuario": "julian",
+    "user_id": 18,
+    "home_score": 2,
+    "away_score": 1
+  },
+  {
+    "match_id": 4,
+    "home_team": "M�xico",
+    "away_team": "Corea del Sur",
+    "usuario": "gerson",
+    "user_id": 11,
+    "home_score": 0,
+    "away_score": 2
+  },
+  {
+    "match_id": 4,
+    "home_team": "M�xico",
+    "away_team": "Corea del Sur",
+    "usuario": "guefo",
+    "user_id": 17,
+    "home_score": 1,
+    "away_score": 2
+  },
+  {
+    "match_id": 4,
+    "home_team": "M�xico",
+    "away_team": "Corea del Sur",
+    "usuario": "tony",
+    "user_id": 12,
+    "home_score": 1,
+    "away_score": 2
+  },
+  {
+    "match_id": 4,
+    "home_team": "M�xico",
+    "away_team": "Corea del Sur",
+    "usuario": "yiyo",
+    "user_id": 15,
+    "home_score": 1,
+    "away_score": 2
+  },
+  {
+    "match_id": 4,
+    "home_team": "M�xico",
+    "away_team": "Corea del Sur",
+    "usuario": "hernan",
+    "user_id": 20,
+    "home_score": 2,
+    "away_score": 2
+  },
+  {
+    "match_id": 4,
+    "home_team": "M�xico",
+    "away_team": "Corea del Sur",
+    "usuario": "merwis",
+    "user_id": 14,
+    "home_score": 1,
+    "away_score": 1
+  },
+  {
+    "match_id": 4,
+    "home_team": "M�xico",
+    "away_team": "Corea del Sur",
+    "usuario": "vaca",
+    "user_id": 16,
+    "home_score": 1,
+    "away_score": 2
+  },
+  {
+    "match_id": 4,
+    "home_team": "M�xico",
+    "away_team": "Corea del Sur",
+    "usuario": "marcelino",
+    "user_id": 19,
+    "home_score": 1,
+    "away_score": 2
+  },
+  {
+    "match_id": 4,
+    "home_team": "M�xico",
+    "away_team": "Corea del Sur",
+    "usuario": "carlos",
+    "user_id": 13,
+    "home_score": 1,
+    "away_score": 0
   }
 ]
