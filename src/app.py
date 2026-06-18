@@ -308,7 +308,12 @@ if authenticate_user():
             
             with st.expander(f"🏆 {round_name}", expanded=jornada_activa):
                 logs_all = supabase.table("predictions_log").select("*").execute().data
-                all_users = [u for u in fetch_all_users() if not u.get("is_admin", False)]
+                all_users = [
+                    u for u in fetch_all_users() 
+                    if not u.get("is_admin", False) 
+                    and str(u.get("is_admin")).strip().lower() != "true"
+                    and u["name"].strip().lower() not in ["admin", "administrator", "administrador"]
+                ]
                 
                 # Mensaje informativo calibrado a hora de Venezuela para los usuarios
                 if not revelado:
@@ -320,7 +325,7 @@ if authenticate_user():
                     
                     for u in all_users:
                         is_me = (u["id"] == user["id"])
-                        user_log = [l for l in logs_all if l["user_id"] == u["id"] and l["match_id"] == j["id"] and not l["is_admin"]]
+                        user_log = [l for l in logs_all if l["user_id"] == u["id"] and l["match_id"] == j["id"]]
                         nombre_mostrar = f"• **Tú**" if is_me else f"• *{u['name']}*"
                         
                         if user_log:
