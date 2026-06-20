@@ -120,8 +120,8 @@ def main():
     # 5. CREACIÓN DE LA ANIMACIÓN CON PLOTLY EXPRESS
     print("🎬 Armando los cuadros de animación...")
     
-    duracion_cuadro = 1500 
-    duracion_deslizar = 600 
+    duracion_cuadro = 3000 
+    duracion_deslizar = 1200 
 
     fig = px.bar(
         df,
