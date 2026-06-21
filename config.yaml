@@ -1,0 +1,45 @@
+# =====================================================================
+# CONFIGURACIÓN MAESTRA DE LA QUINIELA MUNDIAL 2026
+# =====================================================================
+
+# Parámetros del motor de auditoría conductual (Anti-Copias)
+anti_collusion_audit:
+  # Si más del 85% vota el mismo marcador, se ignora por consenso experto
+  max_expert_consensus: 0.85
+  
+  # 80% o más de coincidencia exacta activa la alerta forense
+  similarity_alert_threshold: 0.80
+  
+  # Configuración DBSCAN (0.20 de distancia equivale a tolerar un 20% de discrepancia)
+  dbscan_eps: 0.20
+  dbscan_min_samples: 2
+
+# Parámetros del predictor deportivo (Dixon-Coles)
+predictor_params:
+  base_goals: 1.35
+  max_goles_matriz: 5
+  elo_divisor: 400.0
+  elo_impact_factor: 0.2
+  default_elo: 1600
+
+# Parámetros de scraping y extracción de datos
+data_ingestion:
+  opta_mundial_url: "https://theanalyst.com/competition/fifa-world-cup/stats"
+  selenium_timeout: 15
+  selenium_window_size: "1400,1500"
+
+# Rutas internas del ecosistema de almacenamiento
+paths:
+  fixtures_to_predict: "data/raw/jornada_fixtures.csv"
+  output_predictions: "data/processed/predicciones_quiniela.csv"
+  interim_data: "data/interim"
+
+advanced_collusion_audit:
+  # 1. Tolerancia para el Margen de Goles (1.0 = idénticos, 0.85 = alta similitud de márgenes)
+  margin_similarity_threshold: 0.85
+  
+  # 2. Tolerancia para Información de Shannon (Mide cuántas "sorpresas" comparten)
+  shannon_similarity_threshold: 0.70
+  
+  # 3. Tolerancia para el Perfil de Riesgo (Comportamiento probabilístico)
+  risk_profile_threshold: 0.90
