@@ -356,7 +356,7 @@ if authenticate_user():
             st.markdown("<div style='font-size: 11px; color: #888; text-align: center; margin-top: 10px;'>🎯 Exacto (5pts) | 📈 Ganador (3pts) | ❌ Fallo (0pts)</div>", unsafe_allow_html=True)
         
         st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
-        if st.button("🔄 Forzar Recálculo de Puntos", use_container_width=True):
+        if st.button("🔄 Forzar Recálculo de Puntos", use_container_width=True, key="btn_recalculo_leaderboard"):
             st.cache_data.clear()
             st.rerun()
             
