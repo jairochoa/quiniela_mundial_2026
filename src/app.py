@@ -319,32 +319,46 @@ if authenticate_user():
                 elif row["Rank_Puntos"] == 3: medal = "🥉"
                 else: medal = f"<b>{row['Rank_Puntos']}</b>"
                 
-                # Flecha de Tendencia (Ahora se inyectará al lado del nombre)
+                # Flecha de Tendencia (Mejorada con íconos geométricos sólidos y colores UX)
                 diff = row["Rank_PuntosPrevios"] - row["Rank_Puntos"]
-                trend_html = f"<span class='trend-up'>↑ {diff}</span>" if diff > 0 else (f"<span class='trend-down'>↓ {abs(diff)}</span>" if diff < 0 else "<span class='trend-flat'>-</span>")
+                if diff > 0:
+                    trend_html = f"<span style='color: #1E8E3E; font-weight: bold; margin-left: 8px; font-size: 13px;'>▲ {diff}</span>"
+                elif diff < 0:
+                    trend_html = f"<span style='color: #D93025; font-weight: bold; margin-left: 8px; font-size: 13px;'>▼ {abs(diff)}</span>"
+                else:
+                    trend_html = "<span style='color: #212121; font-weight: bold; margin-left: 8px; font-size: 13px;'>■</span>"
+                    
                 if not max_time: trend_html = ""
                 
-                # Racha HTML (Cambiado de <div> a <span> para mantenerlo en línea)
+                # Racha HTML
                 racha_txt = f"🔥 {row['RachaCount']}" if row["RachaType"] == 'W' else (f"❄️ {row['RachaCount']}" if row["RachaType"] == 'L' else "-")
                 color_racha = '#E65100' if row['RachaType'] == 'W' else '#0288D1'
                 racha_html = f"<span class='racha' style='color: {color_racha}; margin-left: 8px;'>{racha_txt}</span>"
                 
-                # Concatenación optimizada: Todo en línea mediante etiquetas <span>
+                # Concatenación optimizada
                 tabla_html += "<tr>"
                 
-                # Celda 1: Solo la medalla/número
+                # Celda 1: Posición
                 tabla_html += f"<td>{medal}</td>"
                 
-                # Celda 2: Nombre + Micro-Data + Tendencia en la misma línea
+                # Celda 2: Nombre + Micro-Data + Tendencia
                 tabla_html += f"<td><b>{row['Jugador']}</b><span class='micro-data' style='margin-left: 8px;'>🎯 {row['C5']} | 📈 {row['C3']} | ❌ {row['C0']}</span> {trend_html}</td>"
                 
-                # Celda 3: Puntos + Racha en la misma línea
-                tabla_html += f"<td style='text-align:right;'><span style='font-weight:bold; color:#1E90FF; font-size:16px;'>{row['Puntos']} </span>{racha_html}</td>"
+                # Celda 3: Puntos (Tamaño aumentado a 20px) + Racha
+                tabla_html += f"<td style='text-align:right;'><span style='font-weight:900; color:#1E90FF; font-size:20px;'>{row['Puntos']} </span>{racha_html}</td>"
                 
                 tabla_html += "</tr>"
                 
             tabla_html += "</table>"
             st.markdown(tabla_html, unsafe_allow_html=True)
+            
+            # Leyenda sutil
+            st.markdown("<div style='font-size: 11px; color: #888; text-align: center; margin-top: 10px;'>🎯 Plenos (5pts) | 📈 Tendencias (3pts) | ❌ Fallos (0pts)</div>", unsafe_allow_html=True)
+        
+        st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
+        if st.button("🔄 Forzar Recálculo de Puntos", use_container_width=True):
+            st.cache_data.clear()
+            st.rerun()
             
             # Leyenda sutil
             st.markdown("<div style='font-size: 11px; color: #888; text-align: center; margin-top: 10px;'>🎯 Plenos (5pts) | 📈 Tendencias (3pts) | ❌ Fallos (0pts)</div>", unsafe_allow_html=True)
