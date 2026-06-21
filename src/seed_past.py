@@ -64,7 +64,7 @@ def cargar_historico():
         try:
             # 🟢 CAMBIO AQUÍ: Usamos .upsert() especificando el conflicto
             res = supabase.table("predictions_log").upsert(
-                registros_a_subir, 
+                registros_a_subir,
                 on_conflict="user_id,match_id"
             ).execute()
             
