@@ -319,20 +319,28 @@ if authenticate_user():
                 elif row["Rank_Puntos"] == 3: medal = "🥉"
                 else: medal = f"<b>{row['Rank_Puntos']}</b>"
                 
-                # Flecha de Tendencia
-                diff = row["Rank_PuntosPrevios"] - row["Rank_Puntos"] # Positivo si bajó de número (ej. de 3 a 1)
+                # Flecha de Tendencia (Ahora se inyectará al lado del nombre)
+                diff = row["Rank_PuntosPrevios"] - row["Rank_Puntos"]
                 trend_html = f"<span class='trend-up'>↑ {diff}</span>" if diff > 0 else (f"<span class='trend-down'>↓ {abs(diff)}</span>" if diff < 0 else "<span class='trend-flat'>-</span>")
-                if not max_time: trend_html = "" # Si es la primera jornada, no hay tendencia
+                if not max_time: trend_html = ""
                 
-                # Racha HTML
+                # Racha HTML (Cambiado de <div> a <span> para mantenerlo en línea)
                 racha_txt = f"🔥 {row['RachaCount']}" if row["RachaType"] == 'W' else (f"❄️ {row['RachaCount']}" if row["RachaType"] == 'L' else "-")
-                racha_html = f"<div class='racha' style='color: {'#E65100' if row['RachaType'] == 'W' else '#0288D1'};'>{racha_txt}</div>"
+                color_racha = '#E65100' if row['RachaType'] == 'W' else '#0288D1'
+                racha_html = f"<span class='racha' style='color: {color_racha}; margin-left: 8px;'>{racha_txt}</span>"
                 
-                # Concatenación directa línea por línea para evitar que Markdown lo tome como bloque de código
+                # Concatenación optimizada: Todo en línea mediante etiquetas <span>
                 tabla_html += "<tr>"
-                tabla_html += f"<td>{medal}<br>{trend_html}</td>"
-                tabla_html += f"<td><b>{row['Jugador']}</b><br><div class='micro-data'>🎯 {row['C5']} | 📈 {row['C3']} | ❌ {row['C0']}</div></td>"
-                tabla_html += f"<td style='text-align:right;'><span style='font-weight:bold; color:#1E90FF; font-size:16px;'>{row['Puntos']} pts</span><br>{racha_html}</td>"
+                
+                # Celda 1: Solo la medalla/número
+                tabla_html += f"<td>{medal}</td>"
+                
+                # Celda 2: Nombre + Micro-Data + Tendencia en la misma línea
+                tabla_html += f"<td><b>{row['Jugador']}</b><span class='micro-data' style='margin-left: 8px;'>🎯 {row['C5']} | 📈 {row['C3']} | ❌ {row['C0']}</span> {trend_html}</td>"
+                
+                # Celda 3: Puntos + Racha en la misma línea
+                tabla_html += f"<td style='text-align:right;'><span style='font-weight:bold; color:#1E90FF; font-size:16px;'>{row['Puntos']} </span>{racha_html}</td>"
+                
                 tabla_html += "</tr>"
                 
             tabla_html += "</table>"
