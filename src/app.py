@@ -328,23 +328,7 @@ if authenticate_user():
                 racha_txt = f"🔥 {row['RachaCount']}" if row["RachaType"] == 'W' else (f"❄️ {row['RachaCount']}" if row["RachaType"] == 'L' else "-")
                 racha_html = f"<div class='racha' style='color: {'#E65100' if row['RachaType'] == 'W' else '#0288D1'};'>{racha_txt}</div>"
                 
-                for idx, row in enumerate(leaderboard_data):
-                # Medallas
-                if row["Rank_Puntos"] == 1: medal = "🥇"
-                elif row["Rank_Puntos"] == 2: medal = "🥈"
-                elif row["Rank_Puntos"] == 3: medal = "🥉"
-                else: medal = f"<b>{row['Rank_Puntos']}</b>"
-                
-                # Flecha de Tendencia
-                diff = row["Rank_PuntosPrevios"] - row["Rank_Puntos"] # Positivo si bajó de número (ej. de 3 a 1)
-                trend_html = f"<span class='trend-up'>↑ {diff}</span>" if diff > 0 else (f"<span class='trend-down'>↓ {abs(diff)}</span>" if diff < 0 else "<span class='trend-flat'>-</span>")
-                if not max_time: trend_html = "" # Si es la primera jornada, no hay tendencia
-                
-                # Racha HTML
-                racha_txt = f"🔥 {row['RachaCount']}" if row["RachaType"] == 'W' else (f"❄️ {row['RachaCount']}" if row["RachaType"] == 'L' else "-")
-                racha_html = f"<div class='racha' style='color: {'#E65100' if row['RachaType'] == 'W' else '#0288D1'};'>{racha_txt}</div>"
-                
-                # 🟢 CORRECCIÓN: Concatenación directa sin espacios a la izquierda para evitar el bug de Markdown
+                # Concatenación directa línea por línea para evitar que Markdown lo tome como bloque de código
                 tabla_html += "<tr>"
                 tabla_html += f"<td>{medal}<br>{trend_html}</td>"
                 tabla_html += f"<td><b>{row['Jugador']}</b><br><div class='micro-data'>🎯 {row['C5']} | 📈 {row['C3']} | ❌ {row['C0']}</div></td>"
