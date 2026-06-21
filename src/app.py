@@ -353,7 +353,7 @@ if authenticate_user():
             st.markdown(tabla_html, unsafe_allow_html=True)
             
             # Leyenda sutil
-            st.markdown("<div style='font-size: 11px; color: #888; text-align: center; margin-top: 10px;'>🎯 Plenos (5pts) | 📈 Tendencias (3pts) | ❌ Fallos (0pts)</div>", unsafe_allow_html=True)
+            st.markdown("<div style='font-size: 11px; color: #888; text-align: center; margin-top: 10px;'>🎯 Exacto (5pts) | 📈 Ganador (3pts) | ❌ Fallo (0pts)</div>", unsafe_allow_html=True)
         
         st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
         if st.button("🔄 Forzar Recálculo de Puntos", use_container_width=True):
@@ -361,7 +361,7 @@ if authenticate_user():
             st.rerun()
             
             # Leyenda sutil
-            st.markdown("<div style='font-size: 11px; color: #888; text-align: center; margin-top: 10px;'>🎯 Plenos (5pts) | 📈 Tendencias (3pts) | ❌ Fallos (0pts)</div>", unsafe_allow_html=True)
+            st.markdown("<div style='font-size: 11px; color: #888; text-align: center; margin-top: 10px;'>🎯 Exacto (5pts) | 📈 Ganador (3pts) | ❌ Fallo (0pts)</div>", unsafe_allow_html=True)
         
         st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
         if st.button("🔄 Forzar Recálculo de Puntos", use_container_width=True):
