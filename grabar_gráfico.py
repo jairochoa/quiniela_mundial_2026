@@ -14,7 +14,7 @@ def grabar_grafico_perfecto_v2():
     # --- CALIBRACIÓN DE TIEMPOS ---
     # Al poner duracion_cuadro = 3000ms, la carrera total se vuelve más larga.
     # Ajusta 'duracion_real' al tiempo total aproximado que tarda en tu pantalla (ej. 25 segundos)
-    duracion_real = 30  
+    duracion_real = 35  
     fps = 12            # BAJAMOS LOS FPS: Captura menos fotos por segundo para ralentizar el video
     total_frames = duracion_real * fps
     width, height = 1080, 720 

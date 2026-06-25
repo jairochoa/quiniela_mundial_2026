@@ -344,8 +344,8 @@ if authenticate_user():
                 # Celda 2: Nombre + Micro-Data + Tendencia
                 tabla_html += f"<td><b>{row['Jugador']}</b><span class='micro-data' style='margin-left: 8px;'>🎯 {row['C5']} | 📈 {row['C3']} | ❌ {row['C0']}</span> {trend_html}</td>"
                 
-                # Celda 3: Puntos (Tamaño aumentado a 20px) + Racha
-                tabla_html += f"<td style='text-align:right;'><span style='font-weight:900; color:#1E90FF; font-size:20px;'>{row['Puntos']} </span>{racha_html}</td>"
+                # Celda 3: Puntos (Tamaño aumentado a 16px) + Racha
+                tabla_html += f"<td style='text-align:right;'><span style='font-weight:900; color:#1E90FF; font-size:16px;'>{row['Puntos']} </span>{racha_html}</td>"
                 
                 tabla_html += "</tr>"
                 
@@ -360,13 +360,6 @@ if authenticate_user():
             st.cache_data.clear()
             st.rerun()
             
-            # Leyenda sutil
-            st.markdown("<div style='font-size: 11px; color: #888; text-align: center; margin-top: 10px;'>🎯 Exacto (5pts) | 📈 Ganador (3pts) | ❌ Fallo (0pts)</div>", unsafe_allow_html=True)
-        
-        st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
-        if st.button("🔄 Forzar Recálculo de Puntos", use_container_width=True):
-            st.cache_data.clear()
-            st.rerun()
             
     # --- PESTAÑA 4: ADMIN ---
     if tab_a:

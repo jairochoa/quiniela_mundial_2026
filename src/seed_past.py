@@ -29,7 +29,7 @@ def cargar_historico():
 
     # 3. LEER EL ARCHIVO JSON RENOMBRADO
     # Al ejecutarse desde la raíz, buscará el archivo en la raíz del proyecto
-    json_filename = "pronosticos_anteriores.json"
+    json_filename = "pronosticos_anteriores_adding.json"
     
     try:
         with open(json_filename, "r", encoding="utf-8") as f:

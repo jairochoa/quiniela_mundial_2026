@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from scipy.spatial.distance import jensenshannon
 import plotly.express as px
-from src.config import config
+from config import config
 from supabase import create_client
 
 class AdvancedCollusionEngine:

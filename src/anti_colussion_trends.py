@@ -7,7 +7,7 @@ import networkx as nx
 import plotly.graph_objects as go
 import plotly.express as px
 import plotly.figure_factory as ff
-from src.config import config
+from config import config
 import os
 import toml
 from supabase import create_client
