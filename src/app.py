@@ -203,7 +203,7 @@ if authenticate_user():
                     # 🟢 LISTA DE EXCLUSIÓN PARA ELIMINATORIAS
                     usuarios_excluidos = USUARIOS_EXCLUIDOS
                     for u in all_users:
-                        if u["name"].strip.lower() in usuarios_excluidos:
+                        if u["name"].strip().lower() in usuarios_excluidos:
                             continue
                         is_me = (u["id"] == user["id"])
                         user_log = [l for l in logs_all if l["user_id"] == u["id"] and l["match_id"] == j["id"]]
