@@ -255,8 +255,8 @@ if authenticate_user():
         for u in todos_usuarios:
             if u.get("is_admin", False) or normalizar_nombre(u["name"]) in ["admin", "administrator"]: continue
             # 🟢 FILTRO DE JUGADORES: Si el usuario actual está retirado, lo saltamos y no va a la tabla
-            if u["name"].strip().lower() in usuarios_excluidos: continue 
-                
+            if normalizar_nombre(u["name"]) in usuarios_excluidos: continue 
+            
             preds_usuario = {str(l["match_id"]): l for l in sorted([log for log in logs_all if str(log["user_id"]) == str(u["id"])], key=lambda x: x.get("id", 0))}
             
             puntos_totales = 0
