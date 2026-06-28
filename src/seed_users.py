@@ -8,15 +8,16 @@ TEMP_PASSWORD = "Mundial2026!"
 # Lista de tus 9 amigos (Edita los nombres y usuarios a tu gusto)
 # REGLA: El username debe ser en minúsculas y sin espacios
 FRIENDS_LIST = [
-    {"username": "gerson", "name": "Gerson"},
-    {"username": "tony", "name": "Tony"},
-    {"username": "carlos", "name": "Carlos"},
-    {"username": "merwis", "name": "Merwis"},
-    {"username": "yiyo", "name": "Yiyo"},
-    {"username": "vaca", "name": "Vaca"},
-    {"username": "guefo", "name": "Guefo"},
-    {"username": "julian", "name": "Julian"},
-    {"username": "marcelino", "name": "Marcelino"}
+    #{"username": "gerson", "name": "Gerson"},
+    #{"username": "tony", "name": "Tony"},
+    #{"username": "carlos", "name": "Carlos"},
+    #{"username": "merwis", "name": "Merwis"},
+    #{"username": "yiyo", "name": "Yiyo"},
+    #{"username": "vaca", "name": "Vaca"},
+    #{"username": "guefo", "name": "Guefo"},
+    #{"username": "julian", "name": "Julian"},
+    #{"username": "marcelino", "name": "Marcelino"}
+    {"username": "neudy", "name": "Neudy"}
 ]
 
 def register_friends():

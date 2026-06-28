@@ -186,6 +186,7 @@ TEAM_TRANSLATIONS = {
     "New Zealand": "Nueva Zelanda"
 }
 
+USUARIOS_EXCLUIDOS = ["marcelino", "hernan"]
 
 class ProjectConfig:
     def __init__(self):

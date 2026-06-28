@@ -2,7 +2,7 @@
 import streamlit as st
 from datetime import datetime, timezone, timedelta
 from auth import authenticate_user, hash_password
-from config import TEAM_FLAGS, LOCK_WINDOW_HOURS, REVELATION_WINDOW_MINUTES, FLAG_CDN_URL, DEFAULT_FLAG_CODE
+from config import TEAM_FLAGS, LOCK_WINDOW_HOURS, REVELATION_WINDOW_MINUTES, FLAG_CDN_URL, DEFAULT_FLAG_CODE, USUARIOS_EXCLUIDOS
 from database import (
     fetch_all_matches, 
     fetch_latest_user_predictions, 
@@ -200,7 +200,11 @@ if authenticate_user():
                 
                 for j in juegos:
                     st.markdown(f"**⚽ {j['home_team']} vs {j['away_team']}**")
+                    # 🟢 LISTA DE EXCLUSIÓN PARA ELIMINATORIAS
+                    usuarios_excluidos = USUARIOS_EXCLUIDOS
                     for u in all_users:
+                        if u["name"].strip.lower() in usuarios_excluidos:
+                            continue
                         is_me = (u["id"] == user["id"])
                         user_log = [l for l in logs_all if l["user_id"] == u["id"] and l["match_id"] == j["id"]]
                         nombre_mostrar = f"• **Tú**" if is_me else f"• *{u['name']}*"
@@ -225,22 +229,32 @@ if authenticate_user():
             if real_trend == pred_trend: return 3
             return 0
 
-        # 1. PREPARACIÓN DE DATOS
+        # 1. PREPARACIÓN DE DATOS (ADAPTADO A ELIMINATORIAS DE OCTAVOS)
         todos_usuarios = fetch_all_users()
         logs_all = supabase.table("predictions_log").select("*").execute().data
         matches_db = supabase.table("matches").select("*").execute().data
         
-        # Partidos jugados ordenados cronológicamente
-        partidos_jugados = [m for m in matches_db if m.get("home_score") is not None and str(m.get("home_score")).strip() != ""]
+        # 🟢 FILTRO DE RESET: Partidos jugados ordenados cronológicamente EXCLUYENDO la Fase de Grupos ("Jornada")
+        partidos_jugados = [
+            m for m in matches_db 
+            if m.get("home_score") is not None 
+            and str(m.get("home_score")).strip() != ""
+            and "jornada" not in str(m.get("round", "")).strip().lower() # 🔥 Deja por fuera el pasado
+        ]
         partidos_jugados.sort(key=lambda x: x.get("match_time", ""))
         
         leaderboard_data = []
+        
+        # 🟢 LISTA DE EXCLUSIÓN: Jugadores que ya no participan de aquí en adelante
+        usuarios_excluidos = USUARIOS_EXCLUIDOS
         
         # Buscar el último partido (para el cálculo de la tendencia)
         max_time = partidos_jugados[-1].get("match_time", "") if partidos_jugados else ""
         
         for u in todos_usuarios:
             if u.get("is_admin", False) or u["name"].strip().lower() in ["admin", "administrator"]: continue
+            # 🟢 FILTRO DE JUGADORES: Si el usuario actual está retirado, lo saltamos y no va a la tabla
+            if u["name"].strip().lower() in usuarios_excluidos: continue 
                 
             preds_usuario = {str(l["match_id"]): l for l in sorted([log for log in logs_all if str(log["user_id"]) == str(u["id"])], key=lambda x: x.get("id", 0))}
             
