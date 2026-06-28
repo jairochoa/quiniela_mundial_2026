@@ -93,8 +93,6 @@ if authenticate_user():
     primer_partido_por_round = {}
     for m in matches:
         r_name = m.get("round", "Jornada")
-        if "jornada" in str(r_name).strip().lower():
-            continue
         if m.get("match_time"):
             m_time = datetime.fromisoformat(m["match_time"].replace("Z", "+00:00"))
             if r_name not in primer_partido_por_round or m_time < primer_partido_por_round[r_name]:
@@ -115,9 +113,12 @@ if authenticate_user():
         for m in matches:
             match_id = m["id"]
             round_name = m.get("round", "Jornada")
+            if "jornada" in str(round_name).strip().lower():
+                continue
+            round_key = str(round_name).strip().lower()
             match_time = datetime.fromisoformat(m["match_time"].replace("Z", "+00:00"))
             
-            primer_juego_time = primer_partido_por_round.get(round_name, match_time)
+            primer_juego_time = primer_partido_por_round.get(round_key, match_time)
             time_limit = primer_juego_time - timedelta(hours=1)
             is_locked = now_utc >= time_limit
             
