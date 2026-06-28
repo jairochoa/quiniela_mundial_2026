@@ -93,6 +93,8 @@ if authenticate_user():
     primer_partido_por_round = {}
     for m in matches:
         r_name = m.get("round", "Jornada")
+        if "jornada" in str(r_name).strip().lower():
+            continue
         if m.get("match_time"):
             m_time = datetime.fromisoformat(m["match_time"].replace("Z", "+00:00"))
             if r_name not in primer_partido_por_round or m_time < primer_partido_por_round[r_name]:
@@ -100,7 +102,7 @@ if authenticate_user():
 
     # 2. Configuración dinámica de Pestañas
     if user["is_admin"]:
-        tab_p, tab_g, tab_t, tab_a = st.tabs(["📝 Votos", "👥 Grupo", "📊 Tabla", "⚙️ Admin"])
+        tab_p, tab_g, tab_t, tab_a = st.tabs(["📝 Mis Pronósticos", "👥 Grupo", "📊 Tabla", "⚙️ Admin"])
     else:
         tab_p, tab_g, tab_t = st.tabs(["📝 Mis Pronósticos", "👥 Grupo", "📊 Tabla"])
         tab_a = None
