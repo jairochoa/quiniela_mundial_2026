@@ -197,6 +197,7 @@ class ProjectConfig:
         self.DEFAULT_FLAG_CODE = DEFAULT_FLAG_CODE
         self.TEAM_FLAGS = TEAM_FLAGS
         self.TEAM_TRANSLATIONS = TEAM_TRANSLATIONS
+        self.USUARIOS_EXCLUIDOS = USUARIOS_EXCLUIDOS
 
         # 2. 🟢 Resolución de ruta absoluta robusta para config.yaml
         # Subir un nivel de forma segura desde src/config.py a la raíz del proyecto
