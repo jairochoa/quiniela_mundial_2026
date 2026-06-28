@@ -221,8 +221,8 @@ if authenticate_user():
                     
     # --- PESTAÑA 3: TABLA DE POSICIONES COMPACTA CON MICRO-DATOS ---
     with tab_t:
-        st.markdown("### 🏆 Tabla de Posiciones  
-                    ⚽ Fase de 16avos hasta la Final")
+        st.markdown("""### 🏆 Tabla de Posiciones
+                    ⚽ Fase de 16avos hasta la Final""")
         
         def calculate_match_points(pred_home: int, pred_away: int, real_home: int, real_away: int) -> int:
             if pred_home == real_home and pred_away == real_away: return 5
