@@ -10,7 +10,8 @@ from database import (
     get_leaderboard_data,
     supabase,
     fetch_all_users,
-    update_user_password
+    update_user_password,
+    normalizar_nombre
 )
 
 # --- INYECCIÓN DE CSS CALIBRADO PARA MÓVILES ---
@@ -203,7 +204,7 @@ if authenticate_user():
                     # 🟢 LISTA DE EXCLUSIÓN PARA ELIMINATORIAS
                     usuarios_excluidos = USUARIOS_EXCLUIDOS
                     for u in all_users:
-                        if u["name"].strip().lower() in usuarios_excluidos:
+                        if normalizar_nombre(u["name"]) in usuarios_excluidos:
                             continue
                         is_me = (u["id"] == user["id"])
                         user_log = [l for l in logs_all if l["user_id"] == u["id"] and l["match_id"] == j["id"]]
@@ -252,7 +253,7 @@ if authenticate_user():
         max_time = partidos_jugados[-1].get("match_time", "") if partidos_jugados else ""
         
         for u in todos_usuarios:
-            if u.get("is_admin", False) or u["name"].strip().lower() in ["admin", "administrator"]: continue
+            if u.get("is_admin", False) or normalizar_nombre(u["name"]) in ["admin", "administrator"]: continue
             # 🟢 FILTRO DE JUGADORES: Si el usuario actual está retirado, lo saltamos y no va a la tabla
             if u["name"].strip().lower() in usuarios_excluidos: continue 
                 

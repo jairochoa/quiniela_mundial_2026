@@ -1,7 +1,9 @@
 # Ruta del archivo: src/database.py
 import streamlit as st
+import unicodedata
 from supabase import create_client, Client
 from scoring import calculate_match_points
+
 
 @st.cache_resource
 def get_supabase_client() -> Client:
@@ -133,3 +135,7 @@ def update_user_password(user_id: int, new_hash: str) -> bool:
     except Exception as e:
         st.error(f"Error técnico al actualizar contraseña: {e}")
         return False
+
+def normalizar_nombre(texto):
+    nfkd = unicodedata.normalize('NFKD', texto.strip().lower())
+    return "".join([c for c in nfkd if not unicodedata.combining(c)])
